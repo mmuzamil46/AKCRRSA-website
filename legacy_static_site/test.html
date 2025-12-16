@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .branch-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .branch-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .branch-container {
+    grid-template-columns: 1fr;
+  }
+}
+.branch-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+    </style>
+</head>
+<body>
+    <div class="branch-container">
+        <div class="branch-card">
+          <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=..."></iframe>
+          </div>
+          <div class="branch-info">
+            <h3>Branch Name 1</h3>
+            <p><i class="fas fa-user"></i> Managed by: John Doe</p>
+            <p><i class="fas fa-phone"></i> <a href="tel:+1234567890">+1 234 567 890</a></p>
+            <p><i class="fas fa-map-marker-alt"></i> 123 Main St, City, Country</p>
+            <a href="https://maps.google.com?q=123+Main+St+City+Country" class="cta-button">Get Directions</a>
+          </div>
+        </div>
+        <!-- Repeat for all 12 branches -->
+      </div>
+</body>
+</html>
