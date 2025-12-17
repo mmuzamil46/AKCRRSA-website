@@ -4,14 +4,14 @@ import { RiSendPlaneFill, RiStarFill, RiChatSmile2Line } from 'react-icons/ri';
 import { motion } from 'framer-motion';
 
 const Feedback = () => {
-  const [formData, setFormData] = useState({
-    userName: '',
-    userEmail: '',
-    serviceType: 'Civil Registration',
-    woredaOffice: 'Other',
-    rating: 5,
-    comment: ''
-  });
+    const [formData, setFormData] = useState({
+      userName: '',
+      phone: '',
+      serviceType: 'Civil Registration',
+      woredaOffice: 'Other',
+      rating: 5,
+      comment: ''
+    });
   const [woredas, setWoredas] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -40,7 +40,7 @@ const Feedback = () => {
     try {
       await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/feedback`, formData);
       setSuccess(true);
-      setFormData({ userName: '', userEmail: '', serviceType: 'Civil Registration', woredaOffice: 'Other', rating: 5, comment: '' });
+      setFormData({ userName: '', phone: '', serviceType: 'Civil Registration', woredaOffice: 'Other', rating: 5, comment: '' });
     } catch (err) {
       alert('Failed to submit feedback. Please try again.');
     } finally {
@@ -79,13 +79,13 @@ const Feedback = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">ኢሜይል (ከፈለጉ)</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">ስልክ ቁጥር (ከፈለጉ)</label>
                 <input 
-                  type="email" 
+                  type="tel" 
                   className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-primary outline-none transition"
-                  placeholder="john@example.com"
-                  value={formData.userEmail}
-                  onChange={e => setFormData({...formData, userEmail: e.target.value})}
+                  placeholder="0911234567"
+                  value={formData.phone}
+                  onChange={e => setFormData({...formData, phone: e.target.value})}
                 />
               </div>
             </div>

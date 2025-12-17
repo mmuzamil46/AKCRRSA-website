@@ -67,7 +67,7 @@ const AdminContactManager = () => {
 
     const columns = [
         { header: 'Name', accessor: 'name' },
-        { header: 'Email', accessor: 'email' },
+        { header: 'Phone', accessor: 'phone' },
         { header: 'Message', render: (item) => (
             <span className="line-clamp-2">{item.message}</span>
         )},
@@ -196,10 +196,10 @@ const AdminContactManager = () => {
                                     <p className="font-bold">{selectedMessage.name}</p>
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-500">Email</p>
+                                    <p className="text-sm text-gray-500">Phone</p>
                                     <p className="font-bold">
-                                        <a href={`mailto:${selectedMessage.email}`} className="text-blue-600 hover:underline">
-                                            {selectedMessage.email}
+                                        <a href={`tel:${selectedMessage.phone}`} className="text-blue-600 hover:underline">
+                                            {selectedMessage.phone}
                                         </a>
                                     </p>
                                 </div>

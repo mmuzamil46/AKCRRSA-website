@@ -443,8 +443,8 @@ const AdminFeedbackManager = () => {
                                     <p className="font-bold">{selectedFeedback.userName}</p>
                                 </div>
                                 <div>
-                                    <p className="text-sm text-gray-500">Email</p>
-                                    <p className="font-bold">{selectedFeedback.userEmail || 'N/A'}</p>
+                                    <p className="text-sm text-gray-500">Phone</p>
+                                    <p className="font-bold">{selectedFeedback.phone || 'N/A'}</p>
                                 </div>
                                 <div>
                                     <p className="text-sm text-gray-500">Rating</p>

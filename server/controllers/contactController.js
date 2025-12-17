@@ -5,11 +5,11 @@ const ContactMessage = require('../models/ContactMessage');
 // @route   POST /api/contact
 // @access  Public
 const createContactMessage = asyncHandler(async (req, res) => {
-    const { name, email, message } = req.body;
+    const { name, phone, message } = req.body;
 
     const contactMessage = await ContactMessage.create({
         name,
-        email,
+        phone,
         message
     });
 

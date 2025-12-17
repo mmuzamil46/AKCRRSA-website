@@ -23,8 +23,9 @@ const feedbackSchema = new mongoose.Schema({
         type: String,
         default: 'Anonymous'
     },
-    userEmail: {
-        type: String
+    phone: {
+        type: String,
+        required: true // Making it required based on user request "most users use phone", but can be optional if needed. Let's make it required as user emphasized it.
     },
     status: {
         type: String,

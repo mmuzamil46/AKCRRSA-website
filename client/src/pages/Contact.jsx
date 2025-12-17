@@ -5,7 +5,7 @@ import axios from 'axios';
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
+    phone: '',
     message: ''
   });
   const [submitting, setSubmitting] = useState(false);
@@ -21,7 +21,7 @@ const Contact = () => {
     try {
       await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/contact`, formData);
       setSuccessMessage('መልእክትዎ በተሳካ ሁኔታ ተልኳል! በቅርቡ እናገኝዎታለን። (Your message has been sent successfully! We will contact you soon.)');
-      setFormData({ name: '', email: '', message: '' });
+      setFormData({ name: '', phone: '', message: '' });
       setTimeout(() => setSuccessMessage(''), 5000);
     } catch (err) {
       setErrorMessage('ስህተት ተከስቷል። እባክዎ እንደገና ይሞክሩ። (Error occurred. Please try again.)');
@@ -84,7 +84,7 @@ const Contact = () => {
 
           {/* Contact Form */}
           <div className="bg-white p-8 rounded-2xl shadow-lg">
-            <h2 className="text-2xl font-bold text-primary mb-6">መልእክት ይላኩን</h2>
+            <h2 className="text-2xl font-bold text-primary mb-6">መልእክት ይላኩልን</h2>
             
             {successMessage && (
               <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
@@ -111,11 +111,11 @@ const Contact = () => {
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-bold mb-2">ኢሜይል *</label>
+                <label className="block text-gray-700 font-bold mb-2">ስልክ ቁጥር *</label>
                 <input 
-                  type="email" 
-                  name="email"
-                  value={formData.email}
+                  type="tel" 
+                  name="phone"
+                  value={formData.phone}
                   onChange={handleChange}
                   className="w-full p-3 border border-gray-300 rounded focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" 
                   required

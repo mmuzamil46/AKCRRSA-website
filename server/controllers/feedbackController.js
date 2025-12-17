@@ -5,7 +5,7 @@ const Feedback = require('../models/Feedback');
 // @route   POST /api/feedback
 // @access  Public
 const createFeedback = asyncHandler(async (req, res) => {
-    const { serviceType, woredaOffice, rating, comment, userName, userEmail } = req.body;
+    const { serviceType, woredaOffice, rating, comment, userName, phone } = req.body;
 
     const feedback = await Feedback.create({
         serviceType,
@@ -13,7 +13,7 @@ const createFeedback = asyncHandler(async (req, res) => {
         rating,
         comment,
         userName: userName || 'Anonymous',
-        userEmail
+        phone
     });
 
     res.status(201).json(feedback);
