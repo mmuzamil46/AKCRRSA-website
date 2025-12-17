@@ -96,4 +96,28 @@ router.post('/multiple', upload.array('images', 10), async (req, res) => {
     }
 });
 
+// Route: Check Firebase Status (Debug)
+router.get('/status', (req, res) => {
+    const envVarLength = process.env.FIREBASE_SERVICE_ACCOUNT ? process.env.FIREBASE_SERVICE_ACCOUNT.length : 0;
+    const isBucketInit = !!bucket;
+    
+    if (isBucketInit) {
+        res.json({ 
+            status: 'online', 
+            message: 'Firebase Storage is initialized and ready.',
+            bucketName: bucket.name
+        });
+    } else {
+        res.status(500).json({ 
+            status: 'offline', 
+            message: 'Firebase is NOT initialized.',
+            diagnostics: {
+                hasEnvVar: envVarLength > 0,
+                envVarLength: envVarLength,
+                parseError: !isBucketInit && envVarLength > 0 ? "JSON Parse Failed (likely)" : "N/A"
+            }
+        });
+    }
+});
+
 module.exports = router;
