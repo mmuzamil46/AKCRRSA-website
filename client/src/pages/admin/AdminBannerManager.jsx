@@ -85,7 +85,7 @@ const AdminBannerManager = () => {
         data.append('image', file);
         setUploading(true);
         try {
-            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, data, {
+            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/upload?type=banner`, data, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             setFormData({ ...formData, image: res.data });
