@@ -14,8 +14,8 @@ const NewsDetail = () => {
             setLoading(true);
             try {
                 const [newsRes, allNewsRes] = await Promise.all([
-                    axios.get(`http://localhost:5000/api/news/${id}`),
-                    axios.get('http://localhost:5000/api/news')
+                    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/news/${id}`),
+                    axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/news`)
                 ]);
                 setNews(newsRes.data);
                 // Filter current news and take recent 5
@@ -49,7 +49,7 @@ const NewsDetail = () => {
                                     <Link key={item._id} to={`/news/${item._id}`} className="block group">
                                         <div className="h-32 overflow-hidden rounded-lg mb-2">
                                             <img 
-                                                src={item.image.startsWith('/uploads') ? `http://localhost:5000${item.image}` : item.image} 
+                                                src={item.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${item.image}` : item.image} 
                                                 alt={item.title}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                             />
@@ -73,7 +73,7 @@ const NewsDetail = () => {
                             {news.image && (
                                 <div className="w-full h-[400px]">
                                     <img 
-                                        src={news.image.startsWith('/uploads') ? `http://localhost:5000${news.image}` : news.image} 
+                                        src={news.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${news.image}` : news.image} 
                                         alt={news.title} 
                                         className="w-full h-full object-cover"
                                     />
@@ -104,7 +104,7 @@ const NewsDetail = () => {
                                             {news.images.map((img, idx) => (
                                                 <div key={idx} className="rounded-lg overflow-hidden h-64 shadow-md hover:shadow-xl transition-shadow">
                                                     <img 
-                                                        src={`http://localhost:5000${img}`} 
+                                                        src={`${import.meta.env.VITE_API_BASE_URL}${img}`} 
                                                         alt={`Gallery ${idx+1}`} 
                                                         className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
                                                     />
