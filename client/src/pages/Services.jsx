@@ -14,7 +14,7 @@ const Services = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/services');
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/services`);
         setServices(res.data);
         if (res.data.length > 0) {
           if (location.hash) {

@@ -40,7 +40,7 @@ const AdminAboutEditor = () => {
         setSuccessMessage('');
 
         try {
-            await axios.put('http://localhost:5000/api/about', content, config);
+            await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/about`, content, config);
             setSuccessMessage('Content updated successfully!');
             setTimeout(() => setSuccessMessage(''), 3000);
         } catch (err) {

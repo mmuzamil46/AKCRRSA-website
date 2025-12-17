@@ -14,7 +14,7 @@ const CommentSection = ({ serviceId }) => {
 
     const fetchComments = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/comments/service/${serviceId}`);
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/comments/service/${serviceId}`);
         setComments(res.data);
       } catch (err) {
         console.error("Error fetching comments", err);
@@ -29,7 +29,7 @@ const CommentSection = ({ serviceId }) => {
     if (!newComment || !name || !serviceId) return;
 
     try {
-      await axios.post('http://localhost:5000/api/comments', {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/comments`, {
         serviceId,
         user: name,
         content: newComment,

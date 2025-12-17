@@ -10,7 +10,7 @@ const Hero = () => {
   useEffect(() => {
     const fetchBanners = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/banners');
+            const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/banners`);
             if (res.data.length > 0) {
                 setSlides(res.data);
             } else {
@@ -62,7 +62,7 @@ const Hero = () => {
         >
           <div 
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(http://localhost:5000${slides[current].image || slides[current].image})` }} 
+            style={{ backgroundImage: `url(${import.meta.env.VITE_API_BASE_URL}${slides[current].image || slides[current].image})` }} 
             // Note: If using local uploads, prepend domain. If simple URL (like fallback), handle carefully. 
             // Better logic: check if starts with /uploads.
           >
@@ -81,7 +81,7 @@ const Hero = () => {
                     key={index}
                     className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === current ? 'opacity-100' : 'opacity-0'}`}
                     style={{ 
-                        backgroundImage: `url(${slide.image.startsWith('/uploads') || slide.image.startsWith('/') ? `http://localhost:5000${slide.image}` : slide.image})` 
+                        backgroundImage: `url(${slide.image.startsWith('/uploads') || slide.image.startsWith('/') ? `${import.meta.env.VITE_API_BASE_URL}${slide.image}` : slide.image})` 
                     }}
                  />
              ))}

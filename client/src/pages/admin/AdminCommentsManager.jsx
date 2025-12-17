@@ -22,7 +22,7 @@ const AdminCommentsManager = () => {
 
   const fetchComments = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/comments', config);
+      const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/comments`, config);
       setComments(res.data);
       setLoading(false);
     } catch (err) {
@@ -37,7 +37,7 @@ const AdminCommentsManager = () => {
 
   const handleApprove = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/comments/${id}/approve`, {}, config);
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/comments/${id}/approve`, {}, config);
       fetchComments();
     } catch (err) {
       alert('Error approving comment');
@@ -47,7 +47,7 @@ const AdminCommentsManager = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Delete this comment?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/comments/${id}`, config);
+        await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/comments/${id}`, config);
         fetchComments();
       } catch (err) {
         alert('Error deleting comment');

@@ -10,7 +10,7 @@ const Woredas = () => {
   useEffect(() => {
     const fetchWoredas = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/woredas');
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/woredas`);
         setWoredas(res.data);
         setLoading(false);
       } catch (err) {

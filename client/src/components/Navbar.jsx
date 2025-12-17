@@ -15,7 +15,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/announcements/public');
+            const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/announcements/public`);
             setAnnouncements(res.data);
         } catch (err) {
             console.error("Failed to fetch announcements");
