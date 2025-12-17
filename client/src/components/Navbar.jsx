@@ -92,7 +92,7 @@ const Navbar = () => {
           <Link to="/woredas" className={`hover:text-secondary ${isActive('/woredas') ? 'text-secondary' : ''}`}>ወረዳዎች</Link>
           <Link to="/feedback" className={`hover:text-secondary ${isActive('/feedback') ? 'text-secondary' : ''}`}>አስተያየት</Link>
           <Link to="/about" className={`hover:text-secondary ${isActive('/about') ? 'text-secondary' : ''}`}>ስለእኛ</Link>
-          <Link to="/gallery" className={`hover:text-secondary ${isActive('/gallery') ? 'text-secondary' : ''}`}>ማዕከል</Link>
+          <Link to="/gallery" className={`hover:text-secondary ${isActive('/gallery') ? 'text-secondary' : ''}`}>አውደ ርዕይ</Link>
            <Link to="/documents" className={`hover:text-secondary ${isActive('/documents') ? 'text-secondary' : ''}`}>ሰነዶች</Link>
           
           <Link to="/contact" className="px-5 py-2 bg-primary text-white rounded-full hover:bg-secondary transition-colors">
@@ -120,7 +120,7 @@ const Navbar = () => {
               <Link to="/" onClick={toggleMenu} className="hover:text-secondary">መነሻገፅ</Link>
               <Link to="/news" onClick={toggleMenu} className="hover:text-secondary">ምንአዲስ</Link>
              
-              <Link to="/gallery" onClick={toggleMenu} className="hover:text-secondary">ማዕከል</Link>
+              <Link to="/gallery" onClick={toggleMenu} className="hover:text-secondary">አውደ ርዕይ</Link>
               
               {/* Mobile Accordion for Services */}
               <div>
