@@ -1,12 +1,13 @@
 const express = require('express');
 const multer = require('multer');
 const sharp = require('sharp');
+const { bucket } = require('../config/firebase');
 const router = express.Router();
 
-// 1. Use Memory Storage (Keep file in RAM)
+// 1. Use Memory Storage
 const storage = multer.memoryStorage();
 
-// 2. File Filter (Images & Documents)
+// 2. File Filter
 function checkFileType(file, cb) {
   const filetypes = /jpg|jpeg|png|gif|webp|pdf|doc|docx/;
   const mimetype = filetypes.test(file.mimetype) || 
@@ -26,71 +27,72 @@ const upload = multer({
   fileFilter: function (req, file, cb) {
     checkFileType(file, cb);
   },
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit (we compress it down anyway)
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
-// Helper: Process single file buffer
-const processFile = async (buffer, mimetype, type) => {
-    // If it's an image, compress it
+// Helper: Process and Upload to Firebase
+const uploadToFirebase = async (buffer, mimetype, originalname, type) => {
+    if (!bucket) throw new Error("Firebase not initialized");
+
+    let fileBuffer = buffer;
+    const filename = `${Date.now()}-${originalname.replace(/\s+/g, '_')}`;
+
+    // Compress Images (Skip Documents)
     if (mimetype.startsWith('image/')) {
         let pipeline = sharp(buffer);
 
-        // BANNER: High Quality (1920px width, 90% quality)
         if (type === 'banner') {
             pipeline = pipeline.resize({ width: 1920, withoutEnlargement: true })
-                               .jpeg({ quality: 90, force: false })
-                               .png({ quality: 90, force: false });
-        } 
-        // STANDARD: Compressed (800px width, 60% quality)
-        else {
+                               .jpeg({ quality: 90 });
+        } else {
             pipeline = pipeline.resize({ width: 800, withoutEnlargement: true })
-                               .jpeg({ quality: 60, force: false }) // Convert to JPEG if possible for size
-                               .png({ quality: 60, force: false })
-                               .webp({ quality: 60, force: false });
+                               .jpeg({ quality: 70 });
         }
-
-        const processedBuffer = await pipeline.toBuffer();
-        return `data:${mimetype};base64,${processedBuffer.toString('base64')}`;
+        fileBuffer = await pipeline.toBuffer();
     }
-    
-    // If it's a document (PDF/Doc), just Base64 encode it as-is
-    return `data:${mimetype};base64,${buffer.toString('base64')}`;
+
+    const file = bucket.file(filename);
+    const stream = file.createWriteStream({
+        metadata: { contentType: mimetype },
+        resumable: false
+    });
+
+    return new Promise((resolve, reject) => {
+        stream.on('error', (err) => reject(err));
+        stream.on('finish', async () => {
+            // Make public
+            await file.makePublic();
+            // Return public URL
+            const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filename}`;
+            resolve(publicUrl);
+        });
+        stream.end(fileBuffer);
+    });
 };
 
 // Route: Single Upload
 router.post('/', upload.single('image'), async (req, res) => {
   try {
-    if (!req.file) {
-        return res.status(400).send('No file uploaded');
-    }
-
-    const type = req.query.type; // Check if ?type=banner
-    const base64Data = await processFile(req.file.buffer, req.file.mimetype, type);
-    
-    res.send(base64Data); // Send back the Base64 string directly
-
+    if (!req.file) return res.status(400).send('No file uploaded');
+    const url = await uploadToFirebase(req.file.buffer, req.file.mimetype, req.file.originalname, req.query.type);
+    res.send(url);
   } catch (error) {
     console.error(error);
-    res.status(500).send('Server Error during file processing');
+    res.status(500).send('Upload failed: ' + error.message);
   }
 });
 
-// Route: Multiple Uploads (e.g. Gallery/News)
+// Route: Multiple Uploads
 router.post('/multiple', upload.array('images', 10), async (req, res) => {
     try {
-        if (!req.files || req.files.length === 0) {
-             return res.status(400).send('No files uploaded');
-        }
-
+        if (!req.files || req.files.length === 0) return res.status(400).send('No files');
         const type = req.query.type;
-        const uploadPromises = req.files.map(file => processFile(file.buffer, file.mimetype, type));
-        const filePaths = await Promise.all(uploadPromises);
-
-        res.send(filePaths);
-
+        const promises = req.files.map(file => uploadToFirebase(file.buffer, file.mimetype, file.originalname, type));
+        const urls = await Promise.all(promises);
+        res.send(urls);
     } catch (error) {
         console.error(error);
-        res.status(500).send('Server Error during multiple file processing');
+        res.status(500).send('Multiple upload failed');
     }
 });
 
