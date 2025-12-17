@@ -209,7 +209,7 @@ const AdminNewsManager = () => {
                         <div className="flex flex-wrap gap-2 mt-1">
                             {formData.images.map((img, idx) => (
                                 <div key={idx} className="relative group">
-                                    <img src={`${import.meta.env.VITE_API_BASE_URL}${img}`} alt="Preview" className="w-16 h-16 object-cover rounded" />
+                                    <img src={img.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${img}` : img} alt="Preview" className="w-16 h-16 object-cover rounded" />
                                     <button 
                                         type="button"
                                         onClick={() => setFormData(p => ({...p, images: p.images.filter((_, i) => i !== idx)}))}

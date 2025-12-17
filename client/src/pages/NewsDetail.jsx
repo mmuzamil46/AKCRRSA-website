@@ -104,7 +104,7 @@ const NewsDetail = () => {
                                             {news.images.map((img, idx) => (
                                                 <div key={idx} className="rounded-lg overflow-hidden h-64 shadow-md hover:shadow-xl transition-shadow">
                                                     <img 
-                                                        src={`${import.meta.env.VITE_API_BASE_URL}${img}`} 
+                                                        src={img.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${img}` : img} 
                                                         alt={`Gallery ${idx+1}`} 
                                                         className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
                                                     />
