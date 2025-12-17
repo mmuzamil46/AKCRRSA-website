@@ -62,7 +62,7 @@ const Hero = () => {
         >
           <div 
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${import.meta.env.VITE_API_BASE_URL}${slides[current].image || slides[current].image})` }} 
+            style={{ backgroundImage: `url(${slides[current].image.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${slides[current].image}` : slides[current].image})` }} 
             // Note: If using local uploads, prepend domain. If simple URL (like fallback), handle carefully. 
             // Better logic: check if starts with /uploads.
           >

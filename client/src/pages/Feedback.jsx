@@ -1,196 +1,163 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { RiStarFill, RiStarLine, RiSendPlaneFill } from 'react-icons/ri';
+import { RiSendPlaneFill, RiStarFill, RiChatSmile2Line } from 'react-icons/ri';
 import { motion } from 'framer-motion';
 
 const Feedback = () => {
-  const [services, setServices] = useState([]);
-  const [woredas, setWoredas] = useState([]);
   const [formData, setFormData] = useState({
-    serviceType: '',
-    woredaOffice: '',
-    rating: 0,
-    comment: '',
     userName: '',
-    userEmail: ''
+    userEmail: '',
+    serviceType: 'Civil Registration',
+    woredaOffice: 'Other',
+    rating: 5,
+    comment: ''
   });
-  const [hoverRating, setHoverRating] = useState(0);
-  const [submitting, setSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [woredas, setWoredas] = useState([]);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
+  // Fetch Options
   useEffect(() => {
-    fetchData();
+    const fetchOptions = async () => {
+      try {
+        const [wRes, sRes] = await Promise.all([
+            axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/woredas`),
+            axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/services`)
+        ]);
+        setWoredas(wRes.data);
+        setServices(sRes.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchOptions();
   }, []);
-
-  const fetchData = async () => {
-    try {
-      const [servicesRes, woredasRes] = await Promise.all([
-        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/services`),
-        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/woredas`)
-      ]);
-      setServices(servicesRes.data);
-      setWoredas(woredasRes.data);
-    } catch (err) {
-      console.error('Error fetching data:', err);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (formData.rating === 0) {
-      alert('እባክዎ ደረጃ ይስጡ (Please provide a rating)');
-      return;
-    }
-
-    setSubmitting(true);
+    setLoading(true);
     try {
       await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/feedback`, formData);
-      setSuccessMessage('አስተያየትዎ በተሳካ ሁኔታ ተልኳል! (Your feedback has been submitted successfully!)');
-      setFormData({
-        serviceType: '',
-        woredaOffice: '',
-        rating: 0,
-        comment: '',
-        userName: '',
-        userEmail: ''
-      });
-      setTimeout(() => setSuccessMessage(''), 5000);
-      setTimeout(() => setSuccessMessage(''), 5000);
+      setSuccess(true);
+      setFormData({ userName: '', userEmail: '', serviceType: 'Civil Registration', woredaOffice: 'Other', rating: 5, comment: '' });
     } catch (err) {
-      alert('ስህተት ተከስቷል። እባክዎ እንደገና ይሞክሩ። (Error occurred. Please try again.)');
+      alert('Failed to submit feedback. Please try again.');
     } finally {
-      setSubmitting(false);
+      setLoading(false);
     }
-  };
-
-  const renderStars = (rating, interactive = false) => {
-    return [1, 2, 3, 4, 5].map((star) => (
-      <button
-        key={star}
-        type={interactive ? 'button' : undefined}
-        onClick={interactive ? () => setFormData({ ...formData, rating: star }) : undefined}
-        onMouseEnter={interactive ? () => setHoverRating(star) : undefined}
-        onMouseLeave={interactive ? () => setHoverRating(0) : undefined}
-        className={interactive ? 'cursor-pointer transition-transform hover:scale-110' : ''}
-        disabled={!interactive}
-      >
-        {star <= (interactive ? (hoverRating || formData.rating) : rating) ? (
-          <RiStarFill className="text-yellow-400" size={interactive ? 32 : 20} />
-        ) : (
-          <RiStarLine className="text-gray-300" size={interactive ? 32 : 20} />
-        )}
-      </button>
-    ));
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen py-10">
-      <div className="container mx-auto px-4 max-w-6xl">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <p className="text-secondary font-bold uppercase tracking-wider mb-2">አስተያየት</p>
-          <h1 className="text-4xl text-primary font-serif font-bold mb-4">የአገልግሎት ግምገማ</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            የተቀበሉትን አገልግሎት በተመለከተ አስተያየትዎን እና ደረጃዎን ያካፍሉ። አስተያየትዎ አገልግሎታችንን ለማሻሻል ይረዳናል።
-          </p>
+    <div className="bg-gray-50 min-h-screen py-16">
+      <div className="container mx-auto px-4 max-w-2xl">
+        <div className="text-center mb-10">
+          <RiChatSmile2Line className="text-6xl text-primary mx-auto mb-4" />
+          <h1 className="text-4xl font-serif font-bold text-gray-800">We Value Your Feedback</h1>
+          <p className="text-gray-600 mt-2">Help us improve our services for the community.</p>
         </div>
 
-        <div className="max-w-3xl mx-auto">
-          {/* Feedback Form */}
-          <div className="bg-white rounded-xl shadow-md p-8">
-            <h2 className="text-2xl font-bold text-primary mb-6">አስተያየት ያስገቡ</h2>
+        {success ? (
+          <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-green-100 border border-green-400 text-green-700 px-4 py-8 rounded-lg text-center shadow-lg">
+            <h3 className="text-2xl font-bold mb-2">Thank You!</h3>
+            <p>Your feedback has been received and is very important to us.</p>
+            <button onClick={() => setSuccess(false)} className="mt-4 underline">Submit another</button>
+          </motion.div>
+        ) : (
+          <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 space-y-6">
             
-            {successMessage && (
-              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                {successMessage}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Personal Info */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">የአገልግሎት አይነት *</label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent"
+                <label className="block text-sm font-bold text-gray-700 mb-2">Name (Optional)</label>
+                <input 
+                  type="text" 
+                  className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-primary outline-none transition"
+                  placeholder="John Doe"
+                  value={formData.userName}
+                  onChange={e => setFormData({...formData, userName: e.target.value})}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Email (Optional)</label>
+                <input 
+                  type="email" 
+                  className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-primary outline-none transition"
+                  placeholder="john@example.com"
+                  value={formData.userEmail}
+                  onChange={e => setFormData({...formData, userEmail: e.target.value})}
+                />
+              </div>
+            </div>
+
+            {/* Service & Woreda */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Service Received</label>
+                <select 
+                  className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-primary outline-none bg-white"
                   value={formData.serviceType}
-                  onChange={(e) => setFormData({ ...formData, serviceType: e.target.value })}
-                  required
+                  onChange={e => setFormData({...formData, serviceType: e.target.value})}
                 >
-                  <option value="">ይምረጡ...</option>
-                  {services.map((service) => (
-                    <option key={service._id} value={service.title}>{service.title}</option>
-                  ))}
+                  <option>Civil Registration</option>
+                  <option>Vital Events</option>
+                  {services.map(s => <option key={s._id} value={s.title}>{s.title}</option>)}
+                  <option>Other</option>
                 </select>
               </div>
-
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">ወረዳ/ቢሮ *</label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent"
+                <label className="block text-sm font-bold text-gray-700 mb-2">Woreda Office</label>
+                <select 
+                  className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-primary outline-none bg-white"
                   value={formData.woredaOffice}
-                  onChange={(e) => setFormData({ ...formData, woredaOffice: e.target.value })}
-                  required
+                  onChange={e => setFormData({...formData, woredaOffice: e.target.value})}
                 >
-                  <option value="">ይምረጡ...</option>
-                  <option value="ዋና ቢሮ">ዋና ቢሮ (Main Office)</option>
-                  {woredas.map((woreda) => (
-                    <option key={woreda._id} value={woreda.name}>{woreda.name}</option>
-                  ))}
+                  <option>Main Office</option>
+                  {woredas.map(w => <option key={w._id} value={w.name}>{w.name}</option>)}
+                  <option>Other</option>
                 </select>
               </div>
+            </div>
 
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">ደረጃ *</label>
-                <div className="flex gap-2">
-                  {renderStars(formData.rating, true)}
-                </div>
+            {/* Rating */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Rate Your Experience</label>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button 
+                    type="button" 
+                    key={star}
+                    onClick={() => setFormData({...formData, rating: star})}
+                    className={`text-3xl transition-transform hover:scale-110 ${star <= formData.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                  >
+                    <RiStarFill />
+                  </button>
+                ))}
               </div>
+            </div>
 
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">አስተያየት *</label>
-                <textarea
-                  className="w-full border border-gray-300 rounded-lg p-3 h-32 focus:ring-2 focus:ring-primary focus:border-transparent"
-                  value={formData.comment}
-                  onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
-                  placeholder="የአገልግሎቱን ጥራት፣ ፍጥነት እና ሌሎች ልምዶችዎን ያካፍሉ..."
-                  required
-                ></textarea>
-              </div>
+            {/* Comment */}
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Comments / Suggestions</label>
+              <textarea 
+                className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-primary outline-none h-32 resize-none"
+                placeholder="Share your experience..."
+                required
+                value={formData.comment}
+                onChange={e => setFormData({...formData, comment: e.target.value})}
+              ></textarea>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">ስም (አማራጭ)</label>
-                  <input
-                    type="text"
-                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent"
-                    value={formData.userName}
-                    onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
-                    placeholder="ሙሉ ስም"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">ኢሜይል (አማራጭ)</label>
-                  <input
-                    type="email"
-                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent"
-                    value={formData.userEmail}
-                    onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
-                    placeholder="email@example.com"
-                  />
-                </div>
-              </div>
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full bg-primary text-white font-bold py-4 rounded-lg hover:bg-secondary transition-colors flex items-center justify-center gap-2 shadow-md hover:shadow-xl"
+            >
+              {loading ? 'Submitting...' : <><RiSendPlaneFill /> Submit Feedback</>}
+            </button>
 
-              <button
-                type="submit"
-                disabled={submitting}
-                className="w-full bg-primary text-white py-3 rounded-lg font-bold hover:bg-secondary transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                <RiSendPlaneFill size={20} />
-                {submitting ? 'በመላክ ላይ...' : 'አስተያየት ላክ'}
-              </button>
-            </form>
-          </div>
-        </div>
+          </form>
+        )}
       </div>
     </div>
   );

@@ -163,7 +163,7 @@ const AdminGalleryManager = () => {
 
     const columns = [
         { header: 'Image', render: (item) => (
-            <img src={`${import.meta.env.VITE_API_BASE_URL}${item.imageUrl}`} alt={item.title} className="h-16 w-16 object-cover rounded" />
+            <img src={item.imageUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${item.imageUrl}` : item.imageUrl} alt={item.title} className="h-16 w-16 object-cover rounded" />
         )},
         { header: 'Title', accessor: 'title' },
         { header: 'Category', accessor: 'category' },
@@ -266,7 +266,7 @@ const AdminGalleryManager = () => {
                                 </div>
                                 {formData.imageUrl && (
                                     <img
-                                        src={`${import.meta.env.VITE_API_BASE_URL}${formData.imageUrl}`}
+                                        src={formData.imageUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${formData.imageUrl}` : formData.imageUrl}
                                         alt="Preview"
                                         className="mt-2 h-32 object-cover rounded"
                                     />
@@ -360,7 +360,7 @@ const AdminGalleryManager = () => {
                                         {bulkUploadData.images.map((imageUrl, index) => (
                                             <div key={index} className="relative group">
                                                 <img
-                                                    src={`${import.meta.env.VITE_API_BASE_URL}${imageUrl}`}
+                                                    src={imageUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${imageUrl}` : imageUrl}
                                                     alt={`Upload ${index + 1}`}
                                                     className="w-full h-32 object-cover rounded"
                                                 />

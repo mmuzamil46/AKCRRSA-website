@@ -99,7 +99,7 @@ const AdminBannerManager = () => {
     const columns = [
         { header: 'Order', accessor: 'order' },
         { header: 'Title', accessor: 'title' },
-        { header: 'Image', render: (item) => <img src={`${import.meta.env.VITE_API_BASE_URL}${item.image}`} alt="banner" className="h-10 w-20 object-cover rounded" /> }
+        { header: 'Image', render: (item) => <img src={item.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${item.image}` : item.image} alt="banner" className="h-10 w-20 object-cover rounded" /> }
     ];
 
     return (

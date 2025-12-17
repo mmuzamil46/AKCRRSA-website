@@ -79,7 +79,7 @@ const Gallery = () => {
               >
                 <div className="aspect-square overflow-hidden">
                   <img
-                    src={`${import.meta.env.VITE_API_BASE_URL}${item.imageUrl}`}
+                    src={item.imageUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${item.imageUrl}` : item.imageUrl}
                     alt={item.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
@@ -114,7 +114,7 @@ const Gallery = () => {
             </button>
             <div className="max-w-5xl w-full" onClick={(e) => e.stopPropagation()}>
               <img
-                src={`${import.meta.env.VITE_API_BASE_URL}${selectedImage.imageUrl}`}
+                src={selectedImage.imageUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${selectedImage.imageUrl}` : selectedImage.imageUrl}
                 alt={selectedImage.title}
                 className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
               />
