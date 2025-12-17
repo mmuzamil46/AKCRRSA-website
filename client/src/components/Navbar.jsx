@@ -119,7 +119,8 @@ const Navbar = () => {
             <div className="flex flex-col py-4 px-4 space-y-4 font-bold text-primary">
               <Link to="/" onClick={toggleMenu} className="hover:text-secondary">መነሻገፅ</Link>
               <Link to="/news" onClick={toggleMenu} className="hover:text-secondary">ምንአዲስ</Link>
-              {/* <Link to="/documents" onClick={toggleMenu} className="hover:text-secondary">ሰነዶች</Link> */}
+              <Link to="/documents" onClick={toggleMenu} className="hover:text-secondary">ሰነዶች</Link>
+              <Link to="/gallery" onClick={toggleMenu} className="hover:text-secondary">ማዕከል</Link>
               
               {/* Mobile Accordion for Services */}
               <div>
