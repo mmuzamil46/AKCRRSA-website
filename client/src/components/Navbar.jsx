@@ -119,7 +119,7 @@ const Navbar = () => {
             <div className="flex flex-col py-4 px-4 space-y-4 font-bold text-primary">
               <Link to="/" onClick={toggleMenu} className="hover:text-secondary">መነሻገፅ</Link>
               <Link to="/news" onClick={toggleMenu} className="hover:text-secondary">ምንአዲስ</Link>
-              <Link to="/documents" onClick={toggleMenu} className="hover:text-secondary">ሰነዶች</Link>
+             
               <Link to="/gallery" onClick={toggleMenu} className="hover:text-secondary">ማዕከል</Link>
               
               {/* Mobile Accordion for Services */}
@@ -150,6 +150,7 @@ const Navbar = () => {
               <Link to="/woredas" onClick={toggleMenu} className="hover:text-secondary">ወረዳዎች</Link>
               <Link to="/feedback" onClick={toggleMenu} className="hover:text-secondary">አስተያየት</Link>
               <Link to="/about" onClick={toggleMenu} className="hover:text-secondary">ስለእኛ</Link>
+               <Link to="/documents" onClick={toggleMenu} className="hover:text-secondary">ሰነዶች</Link>
               <Link to="/contact" onClick={toggleMenu} className="hover:text-secondary block w-full text-center py-2 bg-primary text-white rounded-md">ያግኙን</Link>
             </div>
           </motion.div>

@@ -53,14 +53,14 @@ const Feedback = () => {
       <div className="container mx-auto px-4 max-w-2xl">
         <div className="text-center mb-10">
           <RiChatSmile2Line className="text-6xl text-primary mx-auto mb-4" />
-          <h1 className="text-4xl font-serif font-bold text-gray-800">We Value Your Feedback</h1>
-          <p className="text-gray-600 mt-2">Help us improve our services for the community.</p>
+          <h1 className="text-4xl font-serif font-bold text-gray-800">ሀሳብ አስተያየትዎ ዋጋ አለው!</h1>
+          <p className="text-gray-600 mt-2">ሀሳብ አስተያየት አልያም ቅሬታዎን በዚህ በኩል ያድርሱን</p>
         </div>
 
         {success ? (
           <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-green-100 border border-green-400 text-green-700 px-4 py-8 rounded-lg text-center shadow-lg">
-            <h3 className="text-2xl font-bold mb-2">Thank You!</h3>
-            <p>Your feedback has been received and is very important to us.</p>
+            <h3 className="text-2xl font-bold mb-2">እናመሰግናልን!</h3>
+            <p>ሀሳብ አስተያየትዎ ደርሶናል!</p>
             <button onClick={() => setSuccess(false)} className="mt-4 underline">Submit another</button>
           </motion.div>
         ) : (
@@ -69,7 +69,7 @@ const Feedback = () => {
             {/* Personal Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Name (Optional)</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">ስም (ከፈለጉ)</label>
                 <input 
                   type="text" 
                   className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-primary outline-none transition"
@@ -79,7 +79,7 @@ const Feedback = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Email (Optional)</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">ኢሜይል (ከፈለጉ)</label>
                 <input 
                   type="email" 
                   className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-primary outline-none transition"
@@ -93,7 +93,7 @@ const Feedback = () => {
             {/* Service & Woreda */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Service Received</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">ያገኙት አገልግሎት</label>
                 <select 
                   className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-primary outline-none bg-white"
                   value={formData.serviceType}
@@ -121,7 +121,7 @@ const Feedback = () => {
 
             {/* Rating */}
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Rate Your Experience</label>
+              <label className="block text-sm font-bold text-gray-700 mb-2">ደረጃ ይስጡ</label>
               <div className="flex gap-2">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button 
@@ -138,7 +138,7 @@ const Feedback = () => {
 
             {/* Comment */}
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Comments / Suggestions</label>
+              <label className="block text-sm font-bold text-gray-700 mb-2">አስተያየት / ጥቆማ</label>
               <textarea 
                 className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-primary outline-none h-32 resize-none"
                 placeholder="Share your experience..."
@@ -153,7 +153,7 @@ const Feedback = () => {
               disabled={loading}
               className="w-full bg-primary text-white font-bold py-4 rounded-lg hover:bg-secondary transition-colors flex items-center justify-center gap-2 shadow-md hover:shadow-xl"
             >
-              {loading ? 'Submitting...' : <><RiSendPlaneFill /> Submit Feedback</>}
+              {loading ? 'Submitting...' : <><RiSendPlaneFill /> ይላኩ</>}
             </button>
 
           </form>
