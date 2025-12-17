@@ -92,7 +92,7 @@ const AdminDocumentManager = () => {
     const columns = [
         { header: 'Title', accessor: 'title' },
         { header: 'Category', accessor: 'category' },
-        { header: 'File', render: (item) => <a href={`${import.meta.env.VITE_API_BASE_URL}${item.fileUrl}`} target="_blank" rel="noreferrer" className="text-blue-500 underline">View</a> }
+        { header: 'File', render: (item) => <a href={item.fileUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${item.fileUrl}` : item.fileUrl} target="_blank" rel="noreferrer" className="text-blue-500 underline">View</a> }
     ];
 
     return (

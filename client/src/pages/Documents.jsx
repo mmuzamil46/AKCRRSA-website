@@ -56,7 +56,7 @@ const Documents = () => {
                                     <RiEyeLine size={18} /> Read Online
                                 </button>
                                 <a 
-                                    href={`${import.meta.env.VITE_API_BASE_URL}${doc.fileUrl}`} 
+                                    href={doc.fileUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${doc.fileUrl}` : doc.fileUrl} 
                                     download
                                     target="_blank" 
                                     rel="noopener noreferrer"
@@ -97,7 +97,7 @@ const Documents = () => {
                     </div>
                     <div className="flex-grow bg-gray-100 p-1">
                         <iframe 
-                            src={`${import.meta.env.VITE_API_BASE_URL}${selectedDoc.fileUrl}`} 
+                            src={selectedDoc.fileUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${selectedDoc.fileUrl}` : selectedDoc.fileUrl} 
                             title={selectedDoc.title}
                             className="w-full h-full border-0"
                         />
