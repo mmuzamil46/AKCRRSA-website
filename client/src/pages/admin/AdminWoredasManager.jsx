@@ -69,9 +69,9 @@ const AdminWoredasManager = () => {
       e.preventDefault();
       try {
         if (editId) {
-            await axios.put(`http://localhost:5000/api/woredas/${editId}`, formData, config);
+            await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/woredas/${editId}`, formData, config);
         } else {
-            await axios.post('http://localhost:5000/api/woredas', formData, config);
+            await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/woredas`, formData, config);
         }
         setShowModal(false);
         setFormData({ name: '', description: '', mapUrl: '', managerName: '', managerPhone: '' });
