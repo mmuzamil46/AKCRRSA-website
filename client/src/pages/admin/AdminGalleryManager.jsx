@@ -99,9 +99,7 @@ const AdminGalleryManager = () => {
         setUploading(true);
 
         try {
-            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, data, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, data);
             setFormData({ ...formData, imageUrl: res.data });
             setUploading(false);
         } catch (err) {
@@ -118,9 +116,7 @@ const AdminGalleryManager = () => {
             const uploadPromises = files.map(async (file) => {
                 const data = new FormData();
                 data.append('image', file);
-                const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, data, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
+                const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, data);
                 return res.data; // Just return the URL
             });
 

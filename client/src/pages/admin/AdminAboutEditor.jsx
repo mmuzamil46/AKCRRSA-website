@@ -57,14 +57,12 @@ const AdminAboutEditor = () => {
         setUploading(true);
 
         try {
-            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, data, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, data);
             setContent({ ...content, heroImage: res.data });
             setUploading(false);
         } catch (err) {
             setUploading(false);
-            alert('Upload failed');
+            alert('Upload failed: ' + (err.response?.data || err.message));
         }
     };
 
