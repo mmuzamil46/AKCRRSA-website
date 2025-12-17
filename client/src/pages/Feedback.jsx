@@ -106,15 +106,15 @@ const Feedback = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Woreda Office</label>
+                <label className="block text-sm font-bold text-gray-700 mb-2">አገልግሎት ያገኙበት ቢሮ</label>
                 <select 
                   className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-primary outline-none bg-white"
                   value={formData.woredaOffice}
                   onChange={e => setFormData({...formData, woredaOffice: e.target.value})}
                 >
-                  <option>Main Office</option>
+                  <option>ክፍለ ከተማ</option>
                   {woredas.map(w => <option key={w._id} value={w.name}>{w.name}</option>)}
-                  <option>Other</option>
+                  
                 </select>
               </div>
             </div>
@@ -141,7 +141,7 @@ const Feedback = () => {
               <label className="block text-sm font-bold text-gray-700 mb-2">አስተያየት / ጥቆማ</label>
               <textarea 
                 className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-primary outline-none h-32 resize-none"
-                placeholder="Share your experience..."
+                placeholder="ያዩትን የተሰማዎትን ያገሩን..."
                 required
                 value={formData.comment}
                 onChange={e => setFormData({...formData, comment: e.target.value})}
