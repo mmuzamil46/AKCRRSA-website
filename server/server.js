@@ -9,9 +9,14 @@ connectDB();
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+    origin: '*', // Allow all origins (simpler for this case)
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true // Enable if you use cookies/sessions
+}));
+app.use(express.json({ limit: '50mb' })); // Increase payload size for Base64 images
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Serve static files (uploaded images)
 app.use('/uploads', express.static('uploads'));
