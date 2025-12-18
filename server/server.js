@@ -43,6 +43,8 @@ app.use('/api/feedback', require('./routes/feedbackRoutes'));
 app.use('/api/contact', require('./routes/contactRoutes'));
 app.use('/api/about', require('./routes/aboutRoutes'));
 app.use('/api/gallery', require('./routes/galleryRoutes'));
+app.use('/api/manager', require('./routes/managerRoutes'));
+
 
 // Make uploads folder static
 const fs = require('fs');

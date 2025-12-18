@@ -3,6 +3,8 @@ import {
   RiDashboardLine, RiArticleLine, RiServiceLine, RiMapPinUserLine, RiMessage2Line, RiLogoutBoxLine,
   RiImage2Line, RiNotification3Line, RiFileTextLine, RiMailFill, RiMenuLine, RiCloseLine
 } from 'react-icons/ri';
+import { FaUserTie } from 'react-icons/fa';
+
 import { Link, useNavigate } from 'react-router-dom';
 import AdminNewsManager from './admin/AdminNewsManager';
 import AdminServicesManager from './admin/AdminServicesManager';
@@ -14,6 +16,8 @@ import AdminFeedbackManager from './admin/AdminFeedbackManager';
 import AdminContactManager from './admin/AdminContactManager';
 import AdminAboutEditor from './admin/AdminAboutEditor';
 import AdminGalleryManager from './admin/AdminGalleryManager';
+import AdminManagerMessage from './admin/AdminManagerMessage';
+
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -62,6 +66,9 @@ const AdminDashboard = () => {
         return <AdminAboutEditor />;
       case 'gallery':
         return <AdminGalleryManager />;
+      case 'manager':
+        return <AdminManagerMessage />;
+
       default:
         return <DashboardHome />;
     }
@@ -108,6 +115,8 @@ const AdminDashboard = () => {
           <SidebarItem icon={<RiMailFill />} label="Contact Messages" active={activeTab === 'contact'} onClick={() => handleTabChange('contact')} />
           <SidebarItem icon={<RiArticleLine />} label="About Page" active={activeTab === 'about'} onClick={() => handleTabChange('about')} />
           <SidebarItem icon={<RiImage2Line />} label="Gallery" active={activeTab === 'gallery'} onClick={() => handleTabChange('gallery')} />
+          <SidebarItem icon={<FaUserTie />} label="Manager Message" active={activeTab === 'manager'} onClick={() => handleTabChange('manager')} />
+
         </nav>
         <div className="p-4 border-t border-white/10">
           <button onClick={handleLogout} className="flex items-center gap-3 w-full px-4 py-3 rounded hover:bg-white/10 transition-colors">
