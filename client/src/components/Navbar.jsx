@@ -61,8 +61,11 @@ const Navbar = () => {
       <nav className={`fixed w-full z-50 bg-white shadow-md font-sans top-0 ${hasAnnouncement ? 'mt-[40px] md:mt-[44px]' : ''}`}>
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 relative">
           <img src="/img/logo.JPG" alt="Logo" className="h-10 md:h-12 w-auto object-contain" />
+          <span className="absolute -top-2 -right-12 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold animate-pulse">
+            v1.2.5
+          </span>
         </Link>
 
         {/* Desktop Menu */}
