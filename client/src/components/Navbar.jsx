@@ -66,6 +66,25 @@ const Navbar = () => {
         
         </Link>
 
+        {/* Animated Marquee (between Logo and Menu) */}
+        <div className="hidden lg:flex flex-1 mx-8 overflow-hidden relative h-10 items-center border-x border-gray-100">
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ 
+              x: ['100%', '0%', '0%', '-100%'],
+            }}
+            transition={{
+              duration: 15,
+              times: [0, 0.4, 0.6, 1], // Slide in (40%), Stop (20%), Slide out (40%)
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            className="whitespace-nowrap font-bold text-primary text-sm tracking-wide"
+          >
+            የአዲስ ከተማ ክፍለ ከተማ ሲቪል ምዝገባ እና የነዋሪነት አገልግሎት ጽ/ቤት
+          </motion.div>
+        </div>
+
         {/* Desktop Menu */}
         <div className="hidden md:flex space-x-6 items-center font-bold text-primary">
           <Link to="/" className={`hover:text-secondary ${isActive('/') ? 'text-secondary' : ''}`}>መነሻገፅ</Link>
