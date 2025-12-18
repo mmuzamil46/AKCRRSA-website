@@ -110,72 +110,140 @@ const AdminContactManager = () => {
             </div>
 
             {loading ? <p>Loading...</p> : (
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="border-b bg-gray-50">
-                                {columns.map((col, idx) => (
-                                    <th key={idx} className="p-4 font-bold text-gray-600">{col.header}</th>
-                                ))}
-                                <th className="p-4 font-bold text-gray-600 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredMessages.length === 0 ? (
-                                <tr>
-                                    <td colSpan={columns.length + 1} className="p-4 text-center text-gray-500">
-                                        No messages found.
-                                    </td>
+                <div className="mt-4">
+                    {/* Desktop Table View */}
+                    <div className="hidden md:block overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="border-b bg-gray-50">
+                                    {columns.map((col, idx) => (
+                                        <th key={idx} className="p-4 font-bold text-gray-600 uppercase text-xs tracking-wider">{col.header}</th>
+                                    ))}
+                                    <th className="p-4 font-bold text-gray-600 text-right uppercase text-xs tracking-wider">Actions</th>
                                 </tr>
-                            ) : (
-                                filteredMessages.map((item) => (
-                                    <tr key={item._id} className="border-b hover:bg-gray-50">
-                                        {columns.map((col, idx) => (
-                                            <td key={idx} className="p-4">
-                                                {col.render ? col.render(item) : item[col.accessor]}
-                                            </td>
-                                        ))}
-                                        <td className="p-4 text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <button
-                                                    onClick={() => setSelectedMessage(item)}
-                                                    className="p-2 text-blue-600 hover:bg-blue-100 rounded"
-                                                    title="View"
-                                                >
-                                                    <RiEyeLine size={18} />
-                                                </button>
-                                                {item.status !== 'read' && (
-                                                    <button
-                                                        onClick={() => handleStatusChange(item._id, 'read')}
-                                                        className="p-2 text-green-600 hover:bg-green-100 rounded"
-                                                        title="Mark as Read"
-                                                    >
-                                                        <RiCheckLine size={18} />
-                                                    </button>
-                                                )}
-                                                {item.status !== 'archived' && (
-                                                    <button
-                                                        onClick={() => handleStatusChange(item._id, 'archived')}
-                                                        className="p-2 text-gray-600 hover:bg-gray-100 rounded"
-                                                        title="Archive"
-                                                    >
-                                                        <RiInboxArchiveLine size={18} />
-                                                    </button>
-                                                )}
-                                                <button
-                                                    onClick={() => handleDelete(item._id)}
-                                                    className="p-2 text-red-600 hover:bg-red-100 rounded"
-                                                    title="Delete"
-                                                >
-                                                    <RiDeleteBinLine size={18} />
-                                                </button>
-                                            </div>
+                            </thead>
+                            <tbody>
+                                {filteredMessages.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={columns.length + 1} className="p-4 text-center text-gray-500 text-sm">
+                                            No messages found.
                                         </td>
                                     </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+                                ) : (
+                                    filteredMessages.map((item) => (
+                                        <tr key={item._id} className="border-b hover:bg-gray-50 transition-colors">
+                                            {columns.map((col, idx) => (
+                                                <td key={idx} className="p-4 text-sm">
+                                                    {col.render ? col.render(item) : item[col.accessor]}
+                                                </td>
+                                            ))}
+                                            <td className="p-4 text-right">
+                                                <div className="flex justify-end gap-2">
+                                                    <button
+                                                        onClick={() => setSelectedMessage(item)}
+                                                        className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                                                        title="View"
+                                                    >
+                                                        <RiEyeLine size={18} />
+                                                    </button>
+                                                    {item.status !== 'read' && (
+                                                        <button
+                                                            onClick={() => handleStatusChange(item._id, 'read')}
+                                                            className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors"
+                                                            title="Mark as Read"
+                                                        >
+                                                            <RiCheckLine size={18} />
+                                                        </button>
+                                                    )}
+                                                    {item.status !== 'archived' && (
+                                                        <button
+                                                            onClick={() => handleStatusChange(item._id, 'archived')}
+                                                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                                            title="Archive"
+                                                        >
+                                                            <RiInboxArchiveLine size={18} />
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        onClick={() => handleDelete(item._id)}
+                                                        className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                                                        title="Delete"
+                                                    >
+                                                        <RiDeleteBinLine size={18} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Mobile Card View */}
+                    <div className="md:hidden space-y-4">
+                        {filteredMessages.length === 0 ? (
+                            <p className="text-center text-gray-500 py-8 text-sm">No messages found.</p>
+                        ) : (
+                            filteredMessages.map((item) => (
+                                <div key={item._id} className="bg-gray-50 rounded-xl p-4 border border-gray-100 shadow-sm space-y-3">
+                                    <div className="flex justify-between items-start">
+                                        <div className="space-y-0.5">
+                                            <h4 className="font-bold text-gray-900">{item.name}</h4>
+                                            <p className="text-xs text-blue-600 font-medium">{item.phone}</p>
+                                        </div>
+                                        {getStatusBadge(item.status)}
+                                    </div>
+
+                                    <div className="py-2 px-3 bg-white/50 rounded-lg border border-gray-100">
+                                        <p className="text-sm text-gray-600 line-clamp-2 italic">
+                                            {item.message}
+                                        </p>
+                                    </div>
+
+                                    <div className="flex items-center justify-between pt-1">
+                                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">
+                                            {new Date(item.createdAt).toLocaleDateString()}
+                                        </span>
+                                        <div className="flex gap-1.5 focus-within:ring-2 focus-within:ring-primary/20 rounded-lg p-0.5">
+                                            <button
+                                                onClick={() => setSelectedMessage(item)}
+                                                className="p-2.5 bg-blue-50 text-blue-600 rounded-lg shadow-sm active:scale-95 transition-transform"
+                                                title="መመልከቻ"
+                                            >
+                                                <RiEyeLine size={18} />
+                                            </button>
+                                            
+                                            {item.status !== 'read' && (
+                                                <button
+                                                    onClick={() => handleStatusChange(item._id, 'read')}
+                                                    className="p-2.5 bg-green-50 text-green-600 rounded-lg shadow-sm active:scale-95 transition-transform"
+                                                >
+                                                    <RiCheckLine size={18} />
+                                                </button>
+                                            )}
+
+                                            {item.status !== 'archived' && (
+                                                <button
+                                                    onClick={() => handleStatusChange(item._id, 'archived')}
+                                                    className="p-2.5 bg-gray-100 text-gray-600 rounded-lg shadow-sm active:scale-95 transition-transform"
+                                                >
+                                                    <RiInboxArchiveLine size={18} />
+                                                </button>
+                                            )}
+
+                                            <button
+                                                onClick={() => handleDelete(item._id)}
+                                                className="p-2.5 bg-red-50 text-red-600 rounded-lg shadow-sm active:scale-95 transition-transform"
+                                            >
+                                                <RiDeleteBinLine size={18} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
                 </div>
             )}
 

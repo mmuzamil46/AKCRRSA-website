@@ -104,6 +104,7 @@ const AdminDashboard = () => {
         </div>
         <nav className="flex-grow p-4 space-y-2 mt-16 lg:mt-0">
           <SidebarItem icon={<RiDashboardLine />} label="Dashboard" active={activeTab === 'dashboard'} onClick={() => handleTabChange('dashboard')} />
+          <SidebarItem icon={<FaUserTie />} label="Manager Message" active={activeTab === 'manager'} onClick={() => handleTabChange('manager')} />
           <SidebarItem icon={<RiArticleLine />} label="News" active={activeTab === 'news'} onClick={() => handleTabChange('news')} />
           <SidebarItem icon={<RiServiceLine />} label="Services" active={activeTab === 'services'} onClick={() => handleTabChange('services')} />
           <SidebarItem icon={<RiMapPinUserLine />} label="Woredas" active={activeTab === 'woredas'} onClick={() => handleTabChange('woredas')} />
@@ -115,8 +116,6 @@ const AdminDashboard = () => {
           <SidebarItem icon={<RiMailFill />} label="Contact Messages" active={activeTab === 'contact'} onClick={() => handleTabChange('contact')} />
           <SidebarItem icon={<RiArticleLine />} label="About Page" active={activeTab === 'about'} onClick={() => handleTabChange('about')} />
           <SidebarItem icon={<RiImage2Line />} label="Gallery" active={activeTab === 'gallery'} onClick={() => handleTabChange('gallery')} />
-          <SidebarItem icon={<FaUserTie />} label="Manager Message" active={activeTab === 'manager'} onClick={() => handleTabChange('manager')} />
-
         </nav>
         <div className="p-4 border-t border-white/10">
           <button onClick={handleLogout} className="flex items-center gap-3 w-full px-4 py-3 rounded hover:bg-white/10 transition-colors">

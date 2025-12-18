@@ -302,65 +302,128 @@ const AdminFeedbackManager = () => {
         ];
 
         return (
-            <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                    <thead>
-                        <tr className="border-b bg-gray-50">
-                            {columns.map((col, idx) => (
-                                <th key={idx} className="p-4 font-bold text-gray-600">{col.header}</th>
-                            ))}
-                            <th className="p-4 font-bold text-gray-600 text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredFeedback.length === 0 ? (
-                            <tr>
-                                <td colSpan={columns.length + 1} className="p-4 text-center text-gray-500">
-                                    No feedback found.
-                                </td>
+            <div className="mt-4">
+                {/* Desktop Table */}
+                <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="border-b bg-gray-50">
+                                {columns.map((col, idx) => (
+                                    <th key={idx} className="p-4 font-bold text-gray-600 uppercase text-xs tracking-wider">{col.header}</th>
+                                ))}
+                                <th className="p-4 font-bold text-gray-600 text-right uppercase text-xs tracking-wider">Actions</th>
                             </tr>
-                        ) : (
-                            filteredFeedback.map((item) => (
-                                <tr key={item._id} className="border-b hover:bg-gray-50">
-                                    {columns.map((col, idx) => (
-                                        <td key={idx} className="p-4">
-                                            {col.render ? col.render(item) : item[col.accessor]}
+                        </thead>
+                        <tbody>
+                            {filteredFeedback.length === 0 ? (
+                                <tr>
+                                    <td colSpan={columns.length + 1} className="p-4 text-center text-gray-500">
+                                        No feedback found.
+                                    </td>
+                                </tr>
+                            ) : (
+                                filteredFeedback.map((item) => (
+                                    <tr key={item._id} className="border-b hover:bg-gray-50 transition-colors">
+                                        {columns.map((col, idx) => (
+                                            <td key={idx} className="p-4 text-sm">
+                                                {col.render ? col.render(item) : item[col.accessor]}
+                                            </td>
+                                        ))}
+                                        <td className="p-4 text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <button
+                                                    onClick={() => setSelectedFeedback(item)}
+                                                    className="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
+                                                    title="View Details"
+                                                >
+                                                    <RiEyeLine size={18} />
+                                                </button>
+                                                {item.status !== 'approved' && (
+                                                    <button
+                                                        onClick={() => handleStatusChange(item._id, 'approved')}
+                                                        className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-colors"
+                                                        title="Approve"
+                                                    >
+                                                        <RiCheckLine size={18} />
+                                                    </button>
+                                                )}
+                                                {item.status !== 'rejected' && (
+                                                    <button
+                                                        onClick={() => handleStatusChange(item._id, 'rejected')}
+                                                        className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
+                                                        title="Reject"
+                                                    >
+                                                        <RiCloseLine size={18} />
+                                                    </button>
+                                                )}
+                                            </div>
                                         </td>
-                                    ))}
-                                    <td className="p-4 text-right">
-                                        <div className="flex justify-end gap-2">
-                                            <button
-                                                onClick={() => setSelectedFeedback(item)}
-                                                className="p-2 text-blue-600 hover:bg-blue-100 rounded"
-                                                title="View Details"
-                                            >
-                                                <RiEyeLine size={18} />
-                                            </button>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
+                {/* Mobile Card List */}
+                <div className="md:hidden space-y-4">
+                    {filteredFeedback.length === 0 ? (
+                        <p className="text-center text-gray-500 py-8">No feedback found.</p>
+                    ) : (
+                        filteredFeedback.map((item) => (
+                            <div key={item._id} className="bg-gray-50 rounded-xl p-4 border border-gray-100 shadow-sm space-y-3">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h4 className="font-bold text-gray-900">{item.serviceType}</h4>
+                                        <p className="text-xs text-gray-500">{item.woredaOffice}</p>
+                                    </div>
+                                    {getStatusBadge(item.status)}
+                                </div>
+                                
+                                <div className="flex items-center justify-between py-2 border-y border-gray-200/50">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">User</p>
+                                        <p className="text-sm font-medium">{item.userName}</p>
+                                    </div>
+                                    <div className="text-right space-y-1">
+                                        <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">Rating</p>
+                                        {renderStars(item.rating)}
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between pt-1">
+                                    <span className="text-xs text-gray-400">{new Date(item.createdAt).toLocaleDateString()}</span>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => setSelectedFeedback(item)}
+                                            className="px-3 py-2 bg-blue-50 text-blue-600 rounded-lg flex items-center gap-1 text-sm font-bold"
+                                        >
+                                            <RiEyeLine size={16} /> ዝርዝር
+                                        </button>
+                                        <div className="flex border-l border-gray-200 pl-2 gap-1">
                                             {item.status !== 'approved' && (
                                                 <button
                                                     onClick={() => handleStatusChange(item._id, 'approved')}
-                                                    className="p-2 text-green-600 hover:bg-green-100 rounded"
-                                                    title="Approve"
+                                                    className="p-2 bg-green-50 text-green-600 rounded-lg"
                                                 >
-                                                    <RiCheckLine size={18} />
+                                                    <RiCheckLine size={20} />
                                                 </button>
                                             )}
                                             {item.status !== 'rejected' && (
                                                 <button
                                                     onClick={() => handleStatusChange(item._id, 'rejected')}
-                                                    className="p-2 text-red-600 hover:bg-red-100 rounded"
-                                                    title="Reject"
+                                                    className="p-2 bg-red-50 text-red-600 rounded-lg"
                                                 >
-                                                    <RiCloseLine size={18} />
+                                                    <RiCloseLine size={20} />
                                                 </button>
                                             )}
                                         </div>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
         );
     };

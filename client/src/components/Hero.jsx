@@ -7,6 +7,7 @@ const Hero = () => {
   const [slides, setSlides] = useState([]);
   const [current, setCurrent] = useState(0);
   const [manager, setManager] = useState(null);
+  const [showFullMessage, setShowFullMessage] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,10 +51,15 @@ const Hero = () => {
 
   if (slides.length === 0) return null;
 
+  const truncateMessage = (text, maxLength = 180) => {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + '...';
+  };
+
   return (
-    <section className="relative w-full overflow-hidden bg-gray-900 flex flex-col md:flex-row min-h-[600px] md:h-[80vh]">
+    <section className={`relative w-full overflow-hidden bg-gray-900 flex flex-col md:flex-row ${showFullMessage ? 'min-h-[800px]' : 'min-h-[600px] md:h-[80vh]'}`}>
       {/* Banner Section */}
-      <div className="relative flex-grow h-[400px] md:h-full overflow-hidden">
+      <div className={`relative flex-grow overflow-hidden ${showFullMessage ? 'h-[300px] md:h-auto' : 'h-[400px] md:h-full'}`}>
         <div className="absolute inset-0 z-0">
             {slides.map((slide, index) => (
                 <div 
@@ -67,7 +73,7 @@ const Hero = () => {
             <div className="absolute inset-0 bg-black/40" />
         </div>
 
-        <div className="relative z-10 h-full flex flex-col justify-center items-center text-center text-white px-4">
+        <div className="relative z-10 h-full flex flex-col justify-center items-center text-center text-white px-4 py-12">
             <motion.h1 
                 key={`h1-${current}`}
                 initial={{ y: 20, opacity: 0 }}
@@ -105,14 +111,14 @@ const Hero = () => {
 
       {/* Manager Section */}
       {manager && (
-        <div className="w-full md:w-[350px] lg:w-[450px] bg-white flex flex-col justify-center p-8 md:p-10 border-t-8 md:border-t-0 md:border-l-8 border-primary relative overflow-hidden">
+        <div className={`w-full md:w-[350px] lg:w-[450px] bg-white flex flex-col justify-center p-8 md:p-10 border-t-8 md:border-t-0 md:border-l-8 border-primary relative overflow-hidden transition-all duration-500 ${showFullMessage ? 'md:overflow-y-auto' : ''}`}>
             {/* Subtle background decoration */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/10 rounded-full -ml-12 -mb-12" />
 
             <div className="relative z-10">
                 <div className="mb-6 flex flex-col items-center md:items-start">
-                    <div className="w-24 h-w-24 md:w-32 md:h-32 rounded-2xl overflow-hidden mb-4 shadow-xl ring-4 ring-primary/10">
+                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl overflow-hidden mb-4 shadow-xl ring-4 ring-primary/10 transition-transform hover:scale-105 duration-300">
                         <img 
                             src={manager.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${manager.image}` : manager.image} 
                             alt={manager.name}
@@ -125,9 +131,19 @@ const Hero = () => {
 
                 <div className="relative">
                     <span className="absolute -top-4 -left-2 text-6xl text-primary/10 font-serif">"</span>
-                    <p className="text-gray-700 leading-relaxed italic text-sm md:text-base mb-6 relative z-10">
-                        {manager.message}
-                    </p>
+                    <div className="text-gray-700 leading-relaxed italic text-sm md:text-base mb-4 relative z-10 transition-all duration-300">
+                        {showFullMessage ? manager.message : truncateMessage(manager.message)}
+                    </div>
+                    
+                    {manager.message.length > 180 && (
+                        <button 
+                            onClick={() => setShowFullMessage(!showFullMessage)}
+                            className="text-primary font-bold text-sm hover:underline focus:outline-none mb-6"
+                        >
+                            {showFullMessage ? 'ቀንስ (Read Less)' : 'ተጨማሪ ያንብቡ (Read More)'}
+                        </button>
+                    )}
+                    
                     <div className="h-1 w-20 bg-primary/20 rounded" />
                 </div>
             </div>
