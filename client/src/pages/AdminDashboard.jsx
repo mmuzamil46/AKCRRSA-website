@@ -99,12 +99,8 @@ const AdminDashboard = () => {
         transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <div className="p-6 border-b border-white/10 hidden lg:flex flex-col bg-white/5">
-          <span className="text-2xl font-serif font-bold">Admin Panel</span>
-          <div className="flex items-center gap-2 mt-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
-            <span className="text-[10px] uppercase tracking-widest font-bold text-green-400">MANAGER v1.2.5 READY</span>
-          </div>
+        <div className="p-6 text-2xl font-serif font-bold border-b border-white/10 hidden lg:block">
+          Admin Panel
         </div>
         <nav className="flex-grow p-4 space-y-2 mt-16 lg:mt-0">
           <SidebarItem icon={<RiDashboardLine />} label="Dashboard" active={activeTab === 'dashboard'} onClick={() => handleTabChange('dashboard')} />
