@@ -8,9 +8,10 @@ const galleryItemSchema = new mongoose.Schema({
     description: {
         type: String
     },
-    imageUrl: {
-        type: String,
-        required: true
+    images: {
+        type: [String],
+        required: true,
+        validate: [v => v.length > 0, 'At least one image is required']
     },
     category: {
         type: String,

@@ -5,7 +5,17 @@ const GalleryItem = require('../models/GalleryItem');
 // @route   GET /api/gallery
 // @access  Public
 const getGalleryItems = asyncHandler(async (req, res) => {
-    const items = await GalleryItem.find().sort({ order: 1, createdAt: -1 });
+    let items = await GalleryItem.find().sort({ order: 1, createdAt: -1 });
+    
+    // Migration: Map old 'imageUrl' to 'images' array if it exists (for backward compatibility)
+    items = items.map(item => {
+        const itemObj = item.toObject();
+        if (itemObj.imageUrl && (!itemObj.images || itemObj.images.length === 0)) {
+            itemObj.images = [itemObj.imageUrl];
+        }
+        return itemObj;
+    });
+
     res.json(items);
 });
 
@@ -13,12 +23,17 @@ const getGalleryItems = asyncHandler(async (req, res) => {
 // @route   POST /api/gallery
 // @access  Private/Admin
 const createGalleryItem = asyncHandler(async (req, res) => {
-    const { title, description, imageUrl, category, order } = req.body;
+    const { title, description, images, category, order } = req.body;
     
+    if (!images || !Array.isArray(images) || images.length === 0) {
+        res.status(400);
+        throw new Error('At least one image is required');
+    }
+
     const item = await GalleryItem.create({
         title,
         description,
-        imageUrl,
+        images,
         category,
         order
     });
@@ -39,7 +54,7 @@ const updateGalleryItem = asyncHandler(async (req, res) => {
     
     item.title = req.body.title || item.title;
     item.description = req.body.description || item.description;
-    item.imageUrl = req.body.imageUrl || item.imageUrl;
+    item.images = req.body.images || item.images;
     item.category = req.body.category || item.category;
     item.order = req.body.order !== undefined ? req.body.order : item.order;
     

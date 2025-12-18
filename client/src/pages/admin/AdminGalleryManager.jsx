@@ -12,18 +12,11 @@ const AdminGalleryManager = () => {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        imageUrl: '',
+        images: [],
         category: 'Other',
         order: 0
     });
-    const [bulkUploadData, setBulkUploadData] = useState({
-        title: '',
-        description: '',
-        category: 'Other',
-        images: []
-    });
     const [uploading, setUploading] = useState(false);
-    const [bulkUploading, setBulkUploading] = useState(false);
 
     const token = localStorage.getItem('adminToken');
     const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -42,7 +35,7 @@ const AdminGalleryManager = () => {
     useEffect(() => { fetchItems(); }, []);
 
     const handleDelete = async (id) => {
-        if (window.confirm('Delete this image?')) {
+        if (window.confirm('Delete this gallery entry?')) {
             try {
                 await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/gallery/${id}`, config);
                 fetchItems();
@@ -56,7 +49,7 @@ const AdminGalleryManager = () => {
         setFormData({
             title: item.title,
             description: item.description,
-            imageUrl: item.imageUrl,
+            images: item.images || (item.imageUrl ? [item.imageUrl] : []),
             category: item.category,
             order: item.order
         });
@@ -65,18 +58,17 @@ const AdminGalleryManager = () => {
     };
 
     const openAddModal = () => {
-        setFormData({ title: '', description: '', imageUrl: '', category: 'Other', order: 0 });
+        setFormData({ title: '', description: '', images: [], category: 'Other', order: 0 });
         setEditId(null);
         setShowModal(true);
     };
 
-    const openBulkUpload = () => {
-        setBulkUploadData({ title: '', description: '', category: 'Other', images: [] });
-        setShowBulkUpload(true);
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (formData.images.length === 0) {
+            return alert('Please upload at least one image');
+        }
+
         try {
             if (editId) {
                 await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/gallery/${editId}`, formData, config);
@@ -84,106 +76,80 @@ const AdminGalleryManager = () => {
                 await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/gallery`, formData, config);
             }
             setShowModal(false);
-            setFormData({ title: '', description: '', imageUrl: '', category: 'Other', order: 0 });
+            setFormData({ title: '', description: '', images: [], category: 'Other', order: 0 });
             setEditId(null);
             fetchItems();
         } catch (err) {
-            alert('Error saving');
+            alert('Error saving gallery entry');
         }
     };
 
     const handleFileChange = async (e) => {
-        const file = e.target.files[0];
-        const data = new FormData();
-        data.append('image', file);
-        setUploading(true);
-
-        try {
-            const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, data);
-            setFormData({ ...formData, imageUrl: res.data });
-            setUploading(false);
-        } catch (err) {
-            setUploading(false);
-            alert('Upload failed');
-        }
-    };
-
-    const handleBulkFileChange = async (e) => {
         const files = Array.from(e.target.files);
-        setBulkUploading(true);
-
+        if (files.length === 0) return;
+        
+        setUploading(true);
         try {
             const uploadPromises = files.map(async (file) => {
                 const data = new FormData();
                 data.append('image', file);
                 const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, data);
-                return res.data; // Just return the URL
+                return res.data.url || res.data; // Handle both response formats
             });
 
             const uploadedUrls = await Promise.all(uploadPromises);
-            setBulkUploadData({ ...bulkUploadData, images: uploadedUrls });
-            setBulkUploading(false);
+            setFormData(prev => ({ 
+                ...prev, 
+                images: [...prev.images, ...uploadedUrls] 
+            }));
+            setUploading(false);
         } catch (err) {
-            setBulkUploading(false);
+            setUploading(false);
             alert('Upload failed');
         }
     };
 
-    const handleBulkSubmit = async (e) => {
-        e.preventDefault();
-        
-        try {
-            const createPromises = bulkUploadData.images.map((imageUrl, index) => {
-                return axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/gallery`, {
-                    title: bulkUploadData.title,
-                    description: bulkUploadData.description,
-                    imageUrl: imageUrl,
-                    category: bulkUploadData.category,
-                    order: index
-                }, config);
-            });
-
-            await Promise.all(createPromises);
-            setShowBulkUpload(false);
-            setBulkUploadData({ title: '', description: '', category: 'Other', images: [] });
-            fetchItems();
-        } catch (err) {
-            alert('Error saving images');
-        }
-    };
-
-    const removeBulkImage = (index) => {
-        const newImages = bulkUploadData.images.filter((_, i) => i !== index);
-        setBulkUploadData({ ...bulkUploadData, images: newImages });
+    const removeImage = (index) => {
+        setFormData(prev => ({
+            ...prev,
+            images: prev.images.filter((_, i) => i !== index)
+        }));
     };
 
     const columns = [
-        { header: 'Image', render: (item) => (
-            <img src={item.imageUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${item.imageUrl}` : item.imageUrl} alt={item.title} className="h-16 w-16 object-cover rounded" />
-        )},
+        { header: 'Cover', render: (item) => {
+            const images = item.images || (item.imageUrl ? [item.imageUrl] : []);
+            const cover = images[0];
+            return (
+                <div className="relative w-16 h-16">
+                    <img 
+                        src={cover?.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${cover}` : cover} 
+                        alt={item.title} 
+                        className="w-full h-full object-cover rounded border border-gray-200" 
+                    />
+                    {images.length > 1 && (
+                        <span className="absolute -top-2 -right-2 bg-primary text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold shadow-sm">
+                            {images.length}
+                        </span>
+                    )}
+                </div>
+            )
+        }},
         { header: 'Title', accessor: 'title' },
         { header: 'Category', accessor: 'category' },
-        { header: 'Order', accessor: 'order' }
+        { header: 'Images', render: (item) => (item.images?.length || (item.imageUrl ? 1 : 0)) + ' photos' }
     ];
 
     return (
         <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex justify-between mb-6">
-                <h3 className="text-xl font-bold">Gallery Management</h3>
-                <div className="flex gap-2">
-                    <button 
-                        onClick={openBulkUpload} 
-                        className="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-green-700"
-                    >
-                        <RiImageAddLine /> Bulk Upload
-                    </button>
-                    <button 
-                        onClick={openAddModal} 
-                        className="bg-primary text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-secondary"
-                    >
-                        <RiAddLine /> Add Single Image
-                    </button>
-                </div>
+            <div className="flex justify-between mb-6 items-center">
+                <h3 className="text-xl font-bold text-gray-800">Gallery Management</h3>
+                <button 
+                    onClick={openAddModal} 
+                    className="bg-primary text-white px-5 py-2.5 rounded-lg flex items-center gap-2 hover:bg-secondary transition-all shadow-md active:scale-95"
+                >
+                    <RiAddLine size={20} /> Add New Entry
+                </button>
             </div>
 
             {loading ? <p>Loading...</p> : (
@@ -195,198 +161,113 @@ const AdminGalleryManager = () => {
                 />
             )}
 
-            {/* Single Image Modal */}
+            {/* Centralized Upload Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
-                        <h3 className="text-2xl font-bold mb-4">{editId ? 'Edit Image' : 'Add Image'}</h3>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-bold mb-1">Title</label>
-                                <input
-                                    type="text"
-                                    className="w-full border p-2 rounded"
-                                    value={formData.title}
-                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    required
-                                />
-                            </div>
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-2xl w-full max-w-2xl p-8 max-h-[90vh] overflow-y-auto shadow-2xl">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-2xl font-extrabold text-gray-900">{editId ? 'Edit Gallery Entry' : 'Create New Entry'}</h3>
+                            <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600">
+                                ✕
+                            </button>
+                        </div>
 
-                            <div>
-                                <label className="block text-sm font-bold mb-1">Description (Optional)</label>
-                                <textarea
-                                    className="w-full border p-2 rounded h-20"
-                                    value={formData.description}
-                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                ></textarea>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-bold mb-1">Category</label>
-                                <select
-                                    className="w-full border p-2 rounded"
-                                    value={formData.category}
-                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                >
-                                    <option>Events</option>
-                                    <option>Office</option>
-                                    <option>Services</option>
-                                    <option>Community</option>
-                                    <option>Other</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-bold mb-1">Order</label>
-                                <input
-                                    type="number"
-                                    className="w-full border p-2 rounded"
-                                    value={formData.order}
-                                    onChange={(e) => setFormData({ ...formData, order: Number(e.target.value) })}
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-bold mb-1">Image</label>
-                                <div className="flex gap-2">
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Title</label>
                                     <input
                                         type="text"
-                                        className="flex-grow border p-2 rounded bg-gray-100"
-                                        value={formData.imageUrl}
-                                        readOnly
+                                        className="w-full border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        value={formData.title}
+                                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                        placeholder="Event Name"
+                                        required
                                     />
-                                    <label className="cursor-pointer bg-gray-200 p-2 rounded hover:bg-gray-300">
-                                        <RiUploadCloud2Line size={24} />
-                                        <input type="file" className="hidden" onChange={handleFileChange} accept="image/*" />
-                                    </label>
                                 </div>
-                                {formData.imageUrl && (
-                                    <img
-                                        src={formData.imageUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${formData.imageUrl}` : formData.imageUrl}
-                                        alt="Preview"
-                                        className="mt-2 h-32 object-cover rounded"
-                                    />
-                                )}
-                            </div>
-
-                            <div className="flex justify-end gap-2 mt-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowModal(false)}
-                                    className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={uploading}
-                                    className="px-4 py-2 bg-primary text-white rounded hover:bg-secondary disabled:opacity-50"
-                                >
-                                    Save
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* Bulk Upload Modal */}
-            {showBulkUpload && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto">
-                        <h3 className="text-2xl font-bold mb-4">Bulk Upload Images</h3>
-                        <form onSubmit={handleBulkSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-bold mb-1">Title (for all images)</label>
-                                <input
-                                    type="text"
-                                    className="w-full border p-2 rounded"
-                                    value={bulkUploadData.title}
-                                    onChange={(e) => setBulkUploadData({ ...bulkUploadData, title: e.target.value })}
-                                    placeholder="e.g., Community Event 2024"
-                                    required
-                                />
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Category</label>
+                                    <select
+                                        className="w-full border border-gray-300 p-3 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        value={formData.category}
+                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                    >
+                                        <option>Events</option>
+                                        <option>Office</option>
+                                        <option>Services</option>
+                                        <option>Community</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold mb-1">Description (for all images)</label>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Description (Optional)</label>
                                 <textarea
-                                    className="w-full border p-2 rounded h-20"
-                                    value={bulkUploadData.description}
-                                    onChange={(e) => setBulkUploadData({ ...bulkUploadData, description: e.target.value })}
-                                    placeholder="Describe this collection of images"
+                                    className="w-full border border-gray-300 p-3 rounded-xl h-24 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    placeholder="Tell more about this entry..."
                                 ></textarea>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold mb-1">Category (applies to all)</label>
-                                <select
-                                    className="w-full border p-2 rounded"
-                                    value={bulkUploadData.category}
-                                    onChange={(e) => setBulkUploadData({ ...bulkUploadData, category: e.target.value })}
-                                >
-                                    <option>Events</option>
-                                    <option>Office</option>
-                                    <option>Services</option>
-                                    <option>Community</option>
-                                    <option>Other</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-bold mb-2">Select Multiple Images</label>
-                                <label className="cursor-pointer bg-primary text-white p-4 rounded hover:bg-secondary flex items-center justify-center gap-2">
-                                    <RiUploadCloud2Line size={24} />
-                                    {bulkUploading ? 'Uploading...' : 'Choose Images'}
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Upload Images</label>
+                                <label className={`cursor-pointer border-2 border-dashed border-gray-300 rounded-2xl p-8 flex flex-col items-center justify-center gap-3 hover:border-primary hover:bg-primary/5 transition-all ${uploading ? 'opacity-50 pointer-events-none' : ''}`}>
+                                    <RiUploadCloud2Line size={40} className="text-primary" />
+                                    <span className="font-bold text-gray-600">{uploading ? 'Uploading...' : 'Click to select or drag images'}</span>
+                                    <span className="text-xs text-gray-400">Multiple images supported</span>
                                     <input 
                                         type="file" 
                                         className="hidden" 
-                                        onChange={handleBulkFileChange} 
+                                        onChange={handleFileChange} 
                                         accept="image/*" 
                                         multiple 
-                                        disabled={bulkUploading}
                                     />
                                 </label>
                             </div>
 
-                            {bulkUploadData.images.length > 0 && (
-                                <div>
-                                    <p className="font-bold mb-2">{bulkUploadData.images.length} images selected</p>
-                                    <div className="grid grid-cols-4 gap-4 max-h-96 overflow-y-auto p-2">
-                                        {bulkUploadData.images.map((imageUrl, index) => (
-                                            <div key={index} className="relative group">
+                            {formData.images.length > 0 && (
+                                <div className="space-y-3">
+                                    <p className="font-bold text-gray-700">{formData.images.length} Photos Selected</p>
+                                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                                        {formData.images.map((url, index) => (
+                                            <div key={index} className="relative group aspect-square">
                                                 <img
-                                                    src={imageUrl.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${imageUrl}` : imageUrl}
+                                                    src={url.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${url}` : url}
                                                     alt={`Upload ${index + 1}`}
-                                                    className="w-full h-32 object-cover rounded"
+                                                    className="w-full h-full object-cover rounded-xl shadow-sm border border-white"
                                                 />
                                                 <button
                                                     type="button"
-                                                    onClick={() => removeBulkImage(index)}
-                                                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    onClick={() => removeImage(index)}
+                                                    className="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-full shadow-md hover:bg-red-600 transition-colors"
                                                 >
                                                     ✕
                                                 </button>
+                                                {index === 0 && (
+                                                    <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[8px] px-1.5 py-0.5 rounded font-bold uppercase">Cover</span>
+                                                )}
                                             </div>
                                         ))}
                                     </div>
                                 </div>
                             )}
 
-                            <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
+                            <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
                                 <button
                                     type="button"
-                                    onClick={() => setShowBulkUpload(false)}
-                                    className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
+                                    onClick={() => setShowModal(false)}
+                                    className="px-6 py-3 text-gray-500 font-bold hover:bg-gray-100 rounded-xl transition-all"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={bulkUploadData.images.length === 0}
-                                    className="px-4 py-2 bg-primary text-white rounded hover:bg-secondary disabled:opacity-50"
+                                    disabled={formData.images.length === 0}
+                                    className="px-8 py-3 bg-primary text-white font-bold rounded-xl hover:bg-secondary transition-all shadow-lg active:scale-95 disabled:opacity-50"
                                 >
-                                    Upload {bulkUploadData.images.length} Images
+                                    {editId ? 'Save Changes' : 'Create Entry'}
                                 </button>
                             </div>
                         </form>
