@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { RiImageLine, RiCloseLine } from 'react-icons/ri';
 
 const Gallery = () => {
