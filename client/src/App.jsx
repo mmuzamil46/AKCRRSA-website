@@ -14,6 +14,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import SocialSidebar from './components/SocialSidebar';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="*" element={
             <>
               <Navbar />
+              <SocialSidebar />
               <main className="flex-grow pt-[72px]">
                 <Routes>
                   <Route path="/" element={<Home />} />

@@ -17,6 +17,7 @@ import AdminContactManager from './admin/AdminContactManager';
 import AdminAboutEditor from './admin/AdminAboutEditor';
 import AdminGalleryManager from './admin/AdminGalleryManager';
 import AdminManagerMessage from './admin/AdminManagerMessage';
+import AdminSocialManager from './admin/AdminSocialManager';
 
 
 const AdminDashboard = () => {
@@ -68,7 +69,8 @@ const AdminDashboard = () => {
         return <AdminGalleryManager />;
       case 'manager':
         return <AdminManagerMessage />;
-
+      case 'social':
+        return <AdminSocialManager />;
       default:
         return <DashboardHome />;
     }
@@ -86,7 +88,7 @@ const AdminDashboard = () => {
 
       {/* Overlay for mobile */}
       {sidebarOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-black/50 z-40"
           onClick={() => setSidebarOpen(false)}
         />
@@ -116,6 +118,7 @@ const AdminDashboard = () => {
           <SidebarItem icon={<RiMailFill />} label="Contact Messages" active={activeTab === 'contact'} onClick={() => handleTabChange('contact')} />
           <SidebarItem icon={<RiArticleLine />} label="About Page" active={activeTab === 'about'} onClick={() => handleTabChange('about')} />
           <SidebarItem icon={<RiImage2Line />} label="Gallery" active={activeTab === 'gallery'} onClick={() => handleTabChange('gallery')} />
+          <SidebarItem icon={<RiShareLine />} label="Social Media" active={activeTab === 'social'} onClick={() => handleTabChange('social')} />
         </nav>
         <div className="p-4 border-t border-white/10">
           <button onClick={handleLogout} className="flex items-center gap-3 w-full px-4 py-3 rounded hover:bg-white/10 transition-colors">

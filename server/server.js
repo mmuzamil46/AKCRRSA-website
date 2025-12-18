@@ -44,6 +44,7 @@ app.use('/api/contact', require('./routes/contactRoutes'));
 app.use('/api/about', require('./routes/aboutRoutes'));
 app.use('/api/gallery', require('./routes/galleryRoutes'));
 app.use('/api/manager', require('./routes/managerRoutes'));
+app.use('/api/social', require('./routes/socialRoutes'));
 
 
 // Make uploads folder static

@@ -1,8 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { RiFacebookCircleFill, RiTwitterXLine, RiInstagramLine, RiYoutubeLine, RiTelegram2Line, RiPhoneFill, RiMailFill } from 'react-icons/ri';
+import axios from 'axios';
+import { RiFacebookCircleFill, RiYoutubeLine, RiTelegram2Line, RiPhoneFill, RiMailFill } from 'react-icons/ri';
+import { FaTiktok, FaXTwitter } from 'react-icons/fa6';
 
 const Footer = () => {
+  const [links, setLinks] = useState({
+    facebook: '/',
+    telegram: '/',
+    tiktok: '/',
+    youtube: '/',
+    x: '/'
+  });
+
+  useEffect(() => {
+    const fetchLinks = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/social`);
+        setLinks(res.data);
+      } catch (err) {
+        console.error("Failed to fetch footer social links", err);
+      }
+    };
+    fetchLinks();
+  }, []);
+
   return (
     <footer className="bg-[#073a59] text-white pt-12 pb-6">
       <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -14,11 +36,11 @@ const Footer = () => {
             የአዲስ ከተማ ክፍለ ከተማ የሲቪል ምዝገባ እና የነዋሪነት አገልግሎት ጽ/ቤት
           </p>
           <div className="flex gap-4">
-            <a href="#" className="hover:text-secondary transition-colors text-xl"><RiFacebookCircleFill /></a>
-            <a href="#" className="hover:text-secondary transition-colors text-xl"><RiTwitterXLine /></a>
-            <a href="#" className="hover:text-secondary transition-colors text-xl"><RiInstagramLine /></a>
-            <a href="#" className="hover:text-secondary transition-colors text-xl"><RiYoutubeLine /></a>
-            <a href="#" className="hover:text-secondary transition-colors text-xl"><RiTelegram2Line /></a>
+            <a href={links.facebook === '/' ? '#' : links.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors text-xl"><RiFacebookCircleFill /></a>
+            <a href={links.telegram === '/' ? '#' : links.telegram} target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors text-xl"><RiTelegram2Line /></a>
+            <a href={links.tiktok === '/' ? '#' : links.tiktok} target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors text-xl"><FaTiktok /></a>
+            <a href={links.youtube === '/' ? '#' : links.youtube} target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors text-xl"><RiYoutubeLine /></a>
+            <a href={links.x === '/' ? '#' : links.x} target="_blank" rel="noopener noreferrer" className="hover:text-secondary transition-colors text-xl"><FaXTwitter /></a>
           </div>
         </div>
 
