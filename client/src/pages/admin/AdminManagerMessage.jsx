@@ -15,24 +15,24 @@ const AdminManagerMessage = () => {
     const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
-        const fetchManager = async () => {
-            try {
-                const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/manager`);
-                if (data) {
-                    setFormData({
-                        name: data.name || '',
-                        title: data.title || '',
-                        message: data.message || '',
-                        image: data.image || ''
-                    });
-                }
-            } catch (err) {
-                console.error(err);
-                toast.error('ተገቢውን መረጃ ማግኘት አልተቻለም');
-            }
-        };
         fetchManager();
     }, []);
+
+    const fetchManager = async () => {
+        try {
+            const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/manager`);
+            if (data) {
+                setFormData({
+                    name: data.name || '',
+                    title: data.title || '',
+                    message: data.message || '',
+                    image: data.image || ''
+                });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
@@ -43,14 +43,15 @@ const AdminManagerMessage = () => {
 
         setUploading(true);
         try {
+            const token = localStorage.getItem('adminToken');
             const config = {
                 headers: {
                     'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('userInfo')).token}`
+                    Authorization: `Bearer ${token}`
                 }
             };
             const { data } = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/upload`, uploadData, config);
-            setFormData({ ...formData, image: data.url });
+            setFormData({ ...formData, image: data.url || data }); // Handle both formats
             toast.success('ፎቶው በተሳካ ሁኔታ ተጭኗል');
         } catch (err) {
             console.error(err);
@@ -65,10 +66,11 @@ const AdminManagerMessage = () => {
         setLoading(true);
 
         try {
+            const token = localStorage.getItem('adminToken');
             const config = {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${JSON.parse(localStorage.getItem('userInfo')).token}`
+                    Authorization: `Bearer ${token}`
                 }
             };
             await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/manager`, formData, config);
@@ -77,10 +79,10 @@ const AdminManagerMessage = () => {
             console.error(err);
             toast.error('መረጃውን ለመቀየር አልተቻለም');
         } finally {
-            setLoading(true);
             setLoading(false);
         }
     };
+
 
     return (
         <div className="p-6">
