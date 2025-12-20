@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   RiDashboardLine, RiArticleLine, RiServiceLine, RiMapPinUserLine, RiMessage2Line, RiLogoutBoxLine,
-  RiImage2Line, RiNotification3Line, RiFileTextLine, RiMailFill, RiMenuLine, RiCloseLine
+  RiImage2Line, RiNotification3Line, RiFileTextLine, RiMailFill, RiMenuLine, RiCloseLine, RiShareLine
 } from 'react-icons/ri';
 import { FaUserTie } from 'react-icons/fa';
 
