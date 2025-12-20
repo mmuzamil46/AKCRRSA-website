@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { FaFacebookF, FaTelegramPlane, FaTiktok, FaYoutube, FaXTwitter } from 'react-icons/fa6';
+import { FaFacebook, FaTelegram, FaTiktok, FaYoutube, FaXTwitter } from 'react-icons/fa6';
 
 const SocialSidebar = () => {
     const [links, setLinks] = useState({
@@ -25,8 +25,8 @@ const SocialSidebar = () => {
     }, []);
 
     const socialItems = [
-        { icon: <FaFacebookF />, url: links.facebook, color: 'bg-[#1877F2]', label: 'Facebook' },
-        { icon: <FaTelegramPlane />, url: links.telegram, color: 'bg-[#229ED9]', label: 'Telegram' },
+        { icon: <FaFacebook />, url: links.facebook, color: 'bg-[#1877F2]', label: 'Facebook' },
+        { icon: <FaTelegram />, url: links.telegram, color: 'bg-[#229ED9]', label: 'Telegram' },
         { icon: <FaTiktok />, url: links.tiktok, color: 'bg-[#000000]', label: 'TikTok' },
         { icon: <FaYoutube />, url: links.youtube, color: 'bg-[#FF0000]', label: 'YouTube' },
         { icon: <FaXTwitter />, url: links.x, color: 'bg-[#000000]', label: 'X' },
