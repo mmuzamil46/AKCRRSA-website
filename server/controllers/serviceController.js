@@ -16,7 +16,7 @@ const getServices = async (req, res) => {
 // @route   POST /api/services
 // @access  Private (Admin)
 const createService = async (req, res) => {
-  const { title, description, icon, requirements, slug } = req.body;
+  const { title, description, icon, requirements, slug, hasCategories, categories } = req.body;
 
   if (!title || !description || !slug) {
     return res.status(400).json({ message: 'Title, Description, and Slug are required' });
@@ -28,7 +28,9 @@ const createService = async (req, res) => {
       description,
       icon,
       requirements,
-      slug
+      slug,
+      hasCategories,
+      categories
     });
 
     const createdService = await service.save();
@@ -42,7 +44,7 @@ const createService = async (req, res) => {
 // @route   PUT /api/services/:id
 // @access  Private (Admin)
 const updateService = async (req, res) => {
-  const { title, description, icon, requirements, slug } = req.body;
+  const { title, description, icon, requirements, slug, hasCategories, categories } = req.body;
 
   try {
     const service = await Service.findById(req.params.id);
@@ -53,6 +55,8 @@ const updateService = async (req, res) => {
       service.icon = icon || service.icon;
       service.requirements = requirements || service.requirements;
       service.slug = slug || service.slug;
+      service.hasCategories = hasCategories !== undefined ? hasCategories : service.hasCategories;
+      service.categories = categories || service.categories;
 
       const updatedService = await service.save();
       res.json(updatedService);

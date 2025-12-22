@@ -21,7 +21,15 @@ const serviceSchema = mongoose.Schema({
   requirements: {
     type: [String], // List of requirements for the service
     required: true,
-  }
+  },
+  hasCategories: {
+    type: Boolean,
+    default: false
+  },
+  categories: [{
+    name: { type: String, required: true },
+    requirements: { type: [String], required: true }
+  }]
 }, {
   timestamps: true,
 });

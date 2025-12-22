@@ -14,6 +14,8 @@ const AdminServicesManager = () => {
     icon: 'RiServiceLine',
     slug: '',
     requirements: '',
+    hasCategories: false,
+    categories: [{ name: '', requirements: '' }] // categories storage as string requirements initially
   });
 
   const token = localStorage.getItem('adminToken');
@@ -54,46 +56,96 @@ const AdminServicesManager = () => {
         icon: item.icon || 'RiServiceLine',
         slug: item.slug,
         requirements: item.requirements ? item.requirements.join(', ') : '',
+        hasCategories: item.hasCategories || false,
+        categories: item.categories && item.categories.length > 0 
+            ? item.categories.map(cat => ({
+                name: cat.name,
+                requirements: cat.requirements.join(', ')
+            })) 
+            : [{ name: '', requirements: '' }]
     });
     setEditId(item._id);
     setShowModal(true);
   };
 
   const openAddModal = () => {
-    setFormData({ title: '', description: '', icon: 'RiServiceLine', slug: '', requirements: '' });
+    setFormData({ 
+        title: '', 
+        description: '', 
+        icon: 'RiServiceLine', 
+        slug: '', 
+        requirements: '',
+        hasCategories: false,
+        categories: [{ name: '', requirements: '' }]
+    });
     setEditId(null);
     setShowModal(true);
   };
 
+  const addCategory = () => {
+     setFormData({
+         ...formData,
+         categories: [...formData.categories, { name: '', requirements: '' }]
+     });
+  };
+
+  const removeCategory = (index) => {
+      const newCats = [...formData.categories];
+      newCats.splice(index, 1);
+      setFormData({ ...formData, categories: newCats });
+  };
+
+  const handleCategoryChange = (index, field, value) => {
+      const newCats = [...formData.categories];
+      newCats[index][field] = value;
+      setFormData({ ...formData, categories: newCats });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const requirementsArray = formData.requirements.split(',').map(r => r.trim());
+    
+    // Process form data for submission
+    const submissionData = {
+        title: formData.title,
+        description: formData.description,
+        icon: formData.icon,
+        slug: formData.slug,
+        hasCategories: formData.hasCategories,
+    };
+
+    if (formData.hasCategories) {
+        submissionData.categories = formData.categories.map(cat => ({
+            name: cat.name,
+            requirements: cat.requirements.split(',').map(r => r.trim()).filter(r => r !== '')
+        }));
+        submissionData.requirements = []; // Clear top-level requirements if using categories
+    } else {
+        submissionData.requirements = formData.requirements.split(',').map(r => r.trim()).filter(r => r !== '');
+        submissionData.categories = [];
+    }
     
     try {
       if (editId) {
-        await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/services/${editId}`, {
-            ...formData,
-            requirements: requirementsArray
-        }, config);
+        await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/services/${editId}`, submissionData, config);
       } else {
-        await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/services`, {
-            ...formData,
-            requirements: requirementsArray
-        }, config);
+        await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/services`, submissionData, config);
       }
       setShowModal(false);
-      setFormData({ title: '', description: '', icon: 'RiServiceLine', slug: '', requirements: '' });
-      setEditId(null);
       fetchServices();
     } catch (err) {
-        console.log(err);
-      alert('Error saving service');
+        console.error(err);
+        alert('Error saving service');
     }
   };
 
   const columns = [
     { header: 'Title', accessor: 'title' },
     { header: 'Slug', accessor: 'slug' },
+    { 
+        header: 'Mode', 
+        accessor: 'hasCategories',
+        render: (val) => val ? <span className="text-blue-600 font-bold">Categorized</span> : <span className="text-gray-500">Simple</span>
+    }
   ];
 
   return (
@@ -120,25 +172,25 @@ const AdminServicesManager = () => {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg w-full max-w-lg p-6">
-            <h3 className="text-2xl font-bold mb-4">{editId ? 'Edit Service' : 'Add Service'}</h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="bg-white rounded-lg w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <h3 className="text-2xl font-bold mb-6 text-primary border-b pb-2">{editId ? 'Edit Service' : 'Add Service'}</h3>
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                     <label className="block text-sm font-bold mb-1">Title</label>
                     <input 
                     type="text" 
-                    className="w-full border p-2 rounded"
+                    className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-primary outline-none"
                     value={formData.title}
                     onChange={(e) => setFormData({...formData, title: e.target.value})}
                     required
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-bold mb-1">Slug (ID like 'birth')</label>
+                    <label className="block text-sm font-bold mb-1">Slug (URL path)</label>
                     <input 
                     type="text" 
-                    className="w-full border p-2 rounded"
+                    className="w-full border p-3 rounded-lg focus:ring-2 focus:ring-primary outline-none"
                     value={formData.slug}
                     onChange={(e) => setFormData({...formData, slug: e.target.value})}
                     required
@@ -147,51 +199,101 @@ const AdminServicesManager = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-bold mb-1">Description</label>
+                <label className="block text-sm font-bold mb-1 text-gray-700">Description</label>
                 <textarea 
-                  className="w-full border p-2 rounded h-24"
+                  className="w-full border p-3 rounded-lg h-24 focus:ring-2 focus:ring-primary outline-none"
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   required
                 ></textarea>
               </div>
 
-              <div>
-                <label className="block text-sm font-bold mb-1">Icon (Remix Icon Name)</label>
-                <input 
-                  type="text" 
-                  className="w-full border p-2 rounded"
-                  value={formData.icon}
-                  onChange={(e) => setFormData({...formData, icon: e.target.value})}
-                  placeholder="RiServiceLine"
-                  required
-                />
+              <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-lg">
+                <label className="relative inline-flex items-center cursor-pointer">
+                    <input 
+                        type="checkbox" 
+                        className="sr-only peer"
+                        checked={formData.hasCategories}
+                        onChange={(e) => setFormData({...formData, hasCategories: e.target.checked})}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    <span className="ml-3 text-sm font-bold text-gray-900 leading-none">Use Sub-Categories (e.g. New, Renewal)</span>
+                </label>
               </div>
 
-              <div>
-                <label className="block text-sm font-bold mb-1">Requirements (Comma separated)</label>
-                <textarea 
-                  className="w-full border p-2 rounded h-20"
-                  value={formData.requirements}
-                  onChange={(e) => setFormData({...formData, requirements: e.target.value})}
-                  placeholder="ID Card, Photo, Payment..."
-                  required
-                ></textarea>
-              </div>
+              {formData.hasCategories ? (
+                <div className="space-y-6 border-l-4 border-primary pl-4">
+                    <div className="flex justify-between items-center mb-2">
+                        <h4 className="font-bold text-lg text-primary">Service Categories</h4>
+                        <button 
+                            type="button"
+                            onClick={addCategory}
+                            className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 flex items-center gap-1"
+                        >
+                            <RiAddLine /> Add Category
+                        </button>
+                    </div>
+                    {formData.categories.map((cat, index) => (
+                        <div key={index} className="bg-white border rounded-lg p-4 relative group shadow-sm">
+                            <button 
+                                type="button"
+                                onClick={() => removeCategory(index)}
+                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                            >
+                                &times;
+                            </button>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Category Name</label>
+                                    <input 
+                                        type="text"
+                                        className="w-full border p-2 rounded focus:border-primary outline-none"
+                                        placeholder="e.g. New (አዲስ)"
+                                        value={cat.name}
+                                        onChange={(e) => handleCategoryChange(index, 'name', e.target.value)}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold uppercase text-gray-500 mb-1">Requirements (Comma separated)</label>
+                                    <textarea 
+                                        className="w-full border p-2 rounded h-20 focus:border-primary outline-none"
+                                        placeholder="Requirement 1, Requirement 2..."
+                                        value={cat.requirements}
+                                        onChange={(e) => handleCategoryChange(index, 'requirements', e.target.value)}
+                                        required
+                                    ></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+              ) : (
+                <div className="border-l-4 border-gray-300 pl-4">
+                    <label className="block text-sm font-bold mb-1">Requirements (Comma separated)</label>
+                    <textarea 
+                    className="w-full border p-3 rounded-lg h-32 focus:ring-2 focus:ring-primary outline-none"
+                    value={formData.requirements}
+                    onChange={(e) => setFormData({...formData, requirements: e.target.value})}
+                    placeholder="ID Card, Photo, Payment..."
+                    required={!formData.hasCategories}
+                    ></textarea>
+                </div>
+              )}
 
-              <div className="flex justify-end gap-2 mt-6">
+              <div className="flex justify-end gap-3 pt-6 border-t mt-8">
                 <button 
                   type="button" 
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
+                  className="px-6 py-2.5 text-gray-500 hover:bg-gray-100 rounded-xl font-medium"
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit" 
-                  className="px-4 py-2 bg-primary text-white rounded hover:bg-secondary"
+                  className="px-10 py-2.5 bg-primary text-white rounded-xl hover:bg-secondary shadow-lg shadow-primary/20 font-bold"
                 >
-                  Save
+                  Save Changes
                 </button>
               </div>
             </form>

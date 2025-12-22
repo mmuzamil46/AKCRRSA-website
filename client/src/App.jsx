@@ -15,6 +15,7 @@ import AdminLogin from './pages/AdminLogin';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import SocialSidebar from './components/SocialSidebar';
+import ChatWidget from './components/ChatWidget';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
             <>
               <Navbar />
               <SocialSidebar />
+              <ChatWidget />
               <main className="flex-grow pt-[72px]">
                 <Routes>
                   <Route path="/" element={<Home />} />
