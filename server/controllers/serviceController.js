@@ -1,4 +1,5 @@
 const Service = require('../models/Service');
+const { clearChatCache } = require('./chatController');
 
 // @desc    Get all services
 // @route   GET /api/services
@@ -34,6 +35,7 @@ const createService = async (req, res) => {
     });
 
     const createdService = await service.save();
+    clearChatCache();
     res.status(201).json(createdService);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -59,6 +61,7 @@ const updateService = async (req, res) => {
       service.categories = categories || service.categories;
 
       const updatedService = await service.save();
+      clearChatCache();
       res.json(updatedService);
     } else {
       res.status(404).json({ message: 'Service not found' });
@@ -77,6 +80,7 @@ const deleteService = async (req, res) => {
 
     if (service) {
       await service.deleteOne();
+      clearChatCache();
       res.json({ message: 'Service removed' });
     } else {
       res.status(404).json({ message: 'Service not found' });
