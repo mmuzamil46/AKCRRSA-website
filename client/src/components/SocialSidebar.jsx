@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaFacebook, FaTelegram, FaTiktok, FaYoutube, FaXTwitter } from 'react-icons/fa6';
 import { RiShareLine, RiCloseLine } from 'react-icons/ri';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const SocialSidebar = () => {
     const [links, setLinks] = useState({
