@@ -42,7 +42,13 @@ const indexDocument = async (document) => {
 
         if (document.fileUrl.startsWith('http')) {
             console.log(`[Indexing] Fetching remote file: ${document.fileUrl}`);
-            const response = await axios.get(document.fileUrl, { responseType: 'arraybuffer' });
+            // Use a clean axios instance to avoid any global interceptors/headers
+            const response = await axios({
+                method: 'get',
+                url: document.fileUrl,
+                responseType: 'arraybuffer',
+                headers: {} // Explicitly empty headers
+            });
             buffer = Buffer.from(response.data);
             console.log(`[Indexing] Remote file fetched successfully. Size: ${buffer.length} bytes`);
         } else {
