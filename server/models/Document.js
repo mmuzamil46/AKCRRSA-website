@@ -15,6 +15,10 @@ const documentSchema = mongoose.Schema({
   category: {
     type: String, // e.g., 'Regulation', 'Form', 'Report'
     default: 'Other',
+  },
+  isIndexed: {
+    type: Boolean,
+    default: false,
   }
 }, {
   timestamps: true,

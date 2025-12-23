@@ -1,5 +1,5 @@
-const asyncHandler = require('express-async-handler');
 const Document = require('../models/Document');
+const { indexDocument } = require('../utils/documentProcessor');
 
 const getDocuments = asyncHandler(async (req, res) => {
   const documents = await Document.find().sort({ createdAt: -1 });
@@ -9,6 +9,10 @@ const getDocuments = asyncHandler(async (req, res) => {
 const createDocument = asyncHandler(async (req, res) => {
   const { title, description, fileUrl, category } = req.body;
   const document = await Document.create({ title, description, fileUrl, category });
+  
+  // Index in background
+  indexDocument(document);
+
   res.status(201).json(document);
 });
 
@@ -28,12 +32,19 @@ const updateDocument = asyncHandler(async (req, res) => {
   const document = await Document.findById(req.params.id);
 
   if (document) {
+    const isUrlChanged = document.fileUrl !== fileUrl;
     document.title = title;
     document.description = description;
     document.fileUrl = fileUrl;
     document.category = category;
 
     const updatedDocument = await document.save();
+    
+    // Re-index if URL changed
+    if (isUrlChanged) {
+      indexDocument(updatedDocument);
+    }
+
     res.json(updatedDocument);
   } else {
     res.status(404);
@@ -41,4 +52,12 @@ const updateDocument = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { getDocuments, createDocument, deleteDocument, updateDocument };
+const reindexAll = asyncHandler(async (req, res) => {
+  const documents = await Document.find();
+  for (const doc of documents) {
+    indexDocument(doc);
+  }
+  res.json({ message: 'Indexing started for all documents' });
+});
+
+module.exports = { getDocuments, createDocument, deleteDocument, updateDocument, reindexAll };
