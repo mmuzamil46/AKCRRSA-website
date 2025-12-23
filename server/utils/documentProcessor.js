@@ -8,11 +8,15 @@ const { getEmbedding } = require('./aiHelper');
 const extractTextFromPDF = async (buffer) => {
     try {
         // Handle potential ESM vs CommonJS variations in different environments
-        const parsePdf = typeof pdf === 'function' ? pdf : (pdf.default || pdf);
+        let parsePdf = pdf;
+        if (typeof parsePdf !== 'function' && parsePdf.default) {
+            parsePdf = parsePdf.default;
+        }
         
         if (typeof parsePdf !== 'function') {
-            console.error("[Indexing] pdf-parse is not a function. Type:", typeof parsePdf);
-            throw new Error("pdf-parse library error: initialization failed");
+            console.error("[Indexing] pdf-parse detection failed. Keys:", Object.keys(pdf));
+            // Just try calling it if it's the only way, or throw better error
+            throw new Error(`pdf-parse library error: expected function, got ${typeof parsePdf}`);
         }
 
         const data = await parsePdf(buffer);
@@ -52,13 +56,10 @@ const indexDocument = async (document) => {
 
         if (url.startsWith('http')) {
             console.log(`[Indexing] Fetching remote file: ${url}`);
-            // Fetch remote file with explicit header overrides to avoid passing local auth tokens
-            const response = await axios.get(url, {
-                responseType: 'arraybuffer',
-                headers: {
-                    'Authorization': undefined,
-                    'authorization': undefined
-                }
+            // Use a fresh axios instance to avoid any global interceptors/headers
+            const cleanAxios = axios.create();
+            const response = await cleanAxios.get(url, {
+                responseType: 'arraybuffer'
             });
             buffer = Buffer.from(response.data);
             console.log(`[Indexing] Remote file fetched successfully. Size: ${buffer.length} bytes`);
