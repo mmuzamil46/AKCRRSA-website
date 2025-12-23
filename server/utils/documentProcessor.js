@@ -7,7 +7,15 @@ const { getEmbedding } = require('./aiHelper');
 
 const extractTextFromPDF = async (buffer) => {
     try {
-        const data = await pdf(buffer);
+        // Handle potential ESM vs CommonJS variations in different environments
+        const parsePdf = typeof pdf === 'function' ? pdf : (pdf.default || pdf);
+        
+        if (typeof parsePdf !== 'function') {
+            console.error("[Indexing] pdf-parse is not a function. Type:", typeof parsePdf);
+            throw new Error("pdf-parse library error: initialization failed");
+        }
+
+        const data = await parsePdf(buffer);
         return data.text;
     } catch (error) {
         console.error("PDF parsing failed:", error);
@@ -44,15 +52,13 @@ const indexDocument = async (document) => {
 
         if (url.startsWith('http')) {
             console.log(`[Indexing] Fetching remote file: ${url}`);
-            const response = await axios({
-                method: 'get',
-                url: url,
+            // Fetch remote file with explicit header overrides to avoid passing local auth tokens
+            const response = await axios.get(url, {
                 responseType: 'arraybuffer',
-                transformRequest: [(data, headers) => {
-                    delete headers.common['Authorization'];
-                    delete headers.common['authorization'];
-                    return data;
-                }]
+                headers: {
+                    'Authorization': undefined,
+                    'authorization': undefined
+                }
             });
             buffer = Buffer.from(response.data);
             console.log(`[Indexing] Remote file fetched successfully. Size: ${buffer.length} bytes`);
