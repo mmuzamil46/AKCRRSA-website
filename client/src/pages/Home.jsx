@@ -3,6 +3,7 @@ import Hero from '../components/Hero';
 import { Link } from 'react-router-dom';
 import { RiIdCardFill, RiFileWarningFill, RiCake2Fill, RiHeartAddFill, RiHealthBookFill } from 'react-icons/ri';
 import axios from 'axios';
+import SEO from '../components/SEO';
 
 const Home = () => {
   const [newsItems, setNewsItems] = useState([]);
@@ -31,6 +32,11 @@ const Home = () => {
 
   return (
     <>
+      <SEO 
+        title="Home" 
+        description="Official website of Addis Ketema Subcity Civil Registration and Residency Service Agency (AKCRRSA). Access residency, vital events registration, and news."
+        keywords="Addis Ketema, CRRSA, Civil Registration, Residency Service, Vital Events, Ethiopia"
+      />
       <Hero />
       
       {/* News Section */}

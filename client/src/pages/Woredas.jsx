@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { RiMapPin2Line, RiUser3Line, RiPhoneLine } from 'react-icons/ri';
 import axios from 'axios';
+import SEO from '../components/SEO';
 
 const Woredas = () => {
   const [woredas, setWoredas] = useState([]);
@@ -26,6 +27,11 @@ const Woredas = () => {
 
   return (
     <div className="bg-white min-h-screen py-10">
+      <SEO 
+        title="Woreda Offices" 
+        description="Find contact information and locations for all Woreda offices under Addis Ketema Subcity CRRSA."
+        keywords="Addis Ketema Woredas, Woreda Office Locations, CRRSA Contact Info"
+      />
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="text-center mb-12">
           <p className="text-secondary font-bold uppercase tracking-wider mb-2">አድራሻ</p>

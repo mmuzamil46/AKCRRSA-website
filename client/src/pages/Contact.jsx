@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { RiMapPinFill, RiPhoneFill, RiMailFill, RiSendPlaneFill } from 'react-icons/ri';
 import axios from 'axios';
+import SEO from '../components/SEO';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -39,6 +40,11 @@ const Contact = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen py-16">
+      <SEO 
+        title="Contact Us" 
+        description="Get in touch with the Addis Ketema Subcity CRRSA. Find our address, phone numbers, and send us a message."
+        keywords="Contact CRRSA, Addis Ketema Office Address, Civil Registration Phone Number"
+      />
       <div className="container mx-auto px-4 max-w-6xl">
         <h1 className="text-4xl text-primary font-serif font-bold mb-12 text-center">ያግኙን</h1>
 

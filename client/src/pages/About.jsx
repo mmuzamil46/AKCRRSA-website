@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import SEO from '../components/SEO';
 
 const About = () => {
   const [content, setContent] = useState(null);
@@ -24,6 +25,11 @@ const About = () => {
 
   return (
     <div className="bg-white min-h-screen">
+      <SEO 
+        title="About Us" 
+        description="Learn about the mission, vision, and role of the Addis Ketema Subcity Civil Registration and Residency Service Agency (AKCRRSA)."
+        keywords="About CRRSA, Addis Ketema Civil Registration, Residency Service Mission"
+      />
       {/* Hero Section */}
       <div className="relative h-[40vh] bg-primary flex items-center justify-center">
         <div className="absolute inset-0 overflow-hidden">

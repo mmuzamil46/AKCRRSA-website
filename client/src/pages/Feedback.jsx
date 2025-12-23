@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { RiSendPlaneFill, RiStarFill, RiChatSmile2Line } from 'react-icons/ri';
 import { motion } from 'framer-motion';
+import SEO from '../components/SEO';
 
 const Feedback = () => {
     const [formData, setFormData] = useState({
@@ -50,6 +51,11 @@ const Feedback = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen py-16">
+      <SEO 
+        title="Feedback" 
+        description="Share your feedback, suggestions, or complaints with the Addis Ketema Subcity CRRSA to help us improve our services."
+        keywords="CRRSA Feedback, Service Review, Addis Ketema Suggestions"
+      />
       <div className="container mx-auto px-4 max-w-2xl">
         <div className="text-center mb-10">
           <RiChatSmile2Line className="text-6xl text-primary mx-auto mb-4" />

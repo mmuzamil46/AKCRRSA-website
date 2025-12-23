@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { RiArrowLeftLine, RiCalendarLine } from 'react-icons/ri';
+import SEO from '../components/SEO';
 
 const NewsDetail = () => {
     const { id } = useParams();
@@ -34,6 +35,12 @@ const NewsDetail = () => {
 
     return (
         <div className="bg-gray-50 min-h-screen py-10">
+            <SEO 
+                title={news.title} 
+                description={news.content.substring(0, 160)}
+                image={news.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${news.image}` : news.image}
+                url={`https://akcrrsa-website.vercel.app/news/${news._id}`}
+            />
             <div className="container mx-auto px-4 max-w-7xl">
                 <Link to="/news" className="inline-flex items-center gap-2 text-primary font-bold mb-6 hover:text-secondary">
                     <RiArrowLeftLine /> Back to News

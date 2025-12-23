@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import SEO from '../components/SEO';
 
 const News = () => {
   const [news, setNews] = useState([]);
@@ -26,6 +27,11 @@ const News = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen py-10">
+      <SEO 
+        title="Latest News" 
+        description="Stay updated with the latest announcements, news, and vital events information from Addis Ketema Subcity CRRSA."
+        keywords="Addis Ketema News, CRRSA Announcements, Vital Events Updates, Ethiopia News"
+      />
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="text-center mb-12">
           <p className="text-secondary font-bold uppercase tracking-wider mb-2">ዜናዎች</p>

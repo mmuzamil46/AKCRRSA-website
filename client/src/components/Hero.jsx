@@ -127,7 +127,7 @@ const Hero = () => {
                     >
                         <img 
                             src={manager.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${manager.image}` : manager.image} 
-                            alt={manager.name}
+                            alt={`Photo of ${manager.name}, ${manager.title} of AKCRRSA`}
                             className="w-full h-full object-cover"
                         />
                     </motion.div>

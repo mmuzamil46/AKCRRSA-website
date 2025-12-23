@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { RiFileDownloadLine, RiFilePdfLine, RiFileTextLine, RiEyeLine, RiCloseLine } from 'react-icons/ri';
 import { motion, AnimatePresence } from 'framer-motion';
+import SEO from '../components/SEO';
 
 const Documents = () => {
   const [documents, setDocuments] = useState([]);
@@ -26,6 +27,11 @@ const Documents = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen py-10">
+      <SEO 
+        title="Documents & Guidelines" 
+        description="Download and view official documents, forms, and residency guidelines from Addis Ketema Subcity CRRSA."
+        keywords="CRRSA Documents, Residency Forms, Ethiopia Civil Registration Guidelines"
+      />
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="text-center mb-12">
             <p className="text-secondary font-bold uppercase tracking-wider mb-2">ማህደር</p>

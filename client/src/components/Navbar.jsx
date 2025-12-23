@@ -62,7 +62,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 relative">
-          <img src="/img/logo.JPG" alt="Logo" className="h-10 md:h-12 w-auto object-contain" />
+          <img src="/img/logo.JPG" alt="AKCRRSA Addis Ketema Official Logo" className="h-10 md:h-12 w-auto object-contain" />
         
         </Link>
 

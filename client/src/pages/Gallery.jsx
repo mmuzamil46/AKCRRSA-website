@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RiImageLine, RiCloseLine } from 'react-icons/ri';
+import SEO from '../components/SEO';
 
 const Gallery = () => {
   const [items, setItems] = useState([]);
@@ -49,6 +50,11 @@ const Gallery = () => {
 
     return (
         <div className="bg-gray-50 min-h-screen py-16">
+            <SEO 
+                title="Photo Gallery" 
+                description="View photos of events, office activities, and services at the Addis Ketema Subcity CRRSA."
+                keywords="Addis Ketema Gallery, CRRSA Photos, Ethiopia Office Events"
+            />
             <div className="container mx-auto px-4 max-w-7xl">
                 {/* Header */}
                 <div className="text-center mb-16">

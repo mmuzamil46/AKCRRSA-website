@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { RiCheckboxCircleFill, RiArrowRightSLine } from 'react-icons/ri';
+import SEO from '../components/SEO';
 
 const Services = () => {
   const location = useLocation();
@@ -51,6 +52,11 @@ const Services = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen py-10">
+      <SEO 
+        title={activeService ? activeService.title : "Services"} 
+        description={activeService ? activeService.description : "Explore the wide range of services provided by Addis Ketema Subcity CRRSA, including ID cards, birth certificates, and more."}
+        keywords={`CRRSA Services, ${activeService ? activeService.title : 'Residency Services'}, Addis Ketema`}
+      />
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="text-center mb-10">
           <p className="text-secondary font-bold uppercase tracking-wider mb-2">አገልግሎቶች</p>

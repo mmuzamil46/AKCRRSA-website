@@ -30,7 +30,7 @@ const Footer = () => {
       <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {/* About Section */}
         <div>
-          <img src="/img/logwhite.JPG" alt="Logo" className="w-32 mb-4" /> {/* Ensure this image exists, otherwise need to check name */}
+          <img src="/img/logwhite.JPG" alt="AKCRRSA Addis Ketema Official Logo White" className="w-32 mb-4" /> {/* Ensure this image exists, otherwise need to check name */}
           {/* Note: User had logwhite.JPG in original code. I must ensure I copied it. */}
           <p className="mb-6 leading-relaxed text-sm">
             የአዲስ ከተማ ክፍለ ከተማ የሲቪል ምዝገባ እና የነዋሪነት አገልግሎት ጽ/ቤት
