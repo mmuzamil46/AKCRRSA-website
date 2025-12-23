@@ -42,15 +42,25 @@ const indexDocument = async (document) => {
 
         if (document.fileUrl.startsWith('http')) {
             console.log(`[Indexing] Fetching remote file: ${document.fileUrl}`);
-            // Use a clean axios instance to avoid any global interceptors/headers
+            // Use a clean axios config to avoid any global default headers
             const response = await axios({
                 method: 'get',
                 url: document.fileUrl,
                 responseType: 'arraybuffer',
-                headers: {} // Explicitly empty headers
+                transformRequest: [(data, headers) => {
+                    // Remove common authorization headers that might cause 401 on external sites
+                    delete headers.common['Authorization'];
+                    delete headers.common['authorization'];
+                    return data;
+                }]
             });
             buffer = Buffer.from(response.data);
             console.log(`[Indexing] Remote file fetched successfully. Size: ${buffer.length} bytes`);
+        } else if (document.fileUrl.startsWith('data:')) {
+            console.log(`[Indexing] Processing Data URI (Base64)`);
+            const base64Data = document.fileUrl.split(';base64,').pop();
+            buffer = Buffer.from(base64Data, 'base64');
+            console.log(`[Indexing] Data URI processed successfully. Size: ${buffer.length} bytes`);
         } else {
             console.log(`[Indexing] Reading local file: ${document.fileUrl}`);
             const filePath = path.join(__dirname, '..', document.fileUrl);
