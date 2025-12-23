@@ -10,6 +10,7 @@ const AdminDocumentManager = () => {
     const [editId, setEditId] = useState(null);
     const [formData, setFormData] = useState({ title: '', description: '', fileUrl: '', category: 'Other' });
     const [uploading, setUploading] = useState(false);
+    const [reindexing, setReindexing] = useState(false);
 
     const token = localStorage.getItem('adminToken');
     const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -72,6 +73,19 @@ const AdminDocumentManager = () => {
         }
     };
 
+    const handleReindex = async () => {
+        if (!window.confirm('This will re-process all documents for the chatbot. Proceed?')) return;
+        setReindexing(true);
+        try {
+            await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/documents/reindex`, {}, config);
+            alert('Indexing started in the background.');
+        } catch (err) {
+            alert('Error starting re-index');
+        } finally {
+            setReindexing(false);
+        }
+    };
+
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
         const data = new FormData();
@@ -99,9 +113,18 @@ const AdminDocumentManager = () => {
         <div className="bg-white rounded-lg shadow p-6">
             <div className="flex justify-between mb-6">
                 <h3 className="text-xl font-bold">Documents</h3>
-                <button onClick={openAddModal} className="bg-primary text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-secondary">
-                    <RiAddLine /> Add Document
-                </button>
+                <div className="flex gap-2">
+                    <button 
+                        onClick={handleReindex} 
+                        disabled={reindexing}
+                        className="bg-gray-100 text-gray-700 px-4 py-2 rounded flex items-center gap-2 hover:bg-gray-200 disabled:opacity-50"
+                    >
+                        {reindexing ? 'Indexing...' : <><RiUploadCloud2Line /> Re-index All</>}
+                    </button>
+                    <button onClick={openAddModal} className="bg-primary text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-secondary">
+                        <RiAddLine /> Add Document
+                    </button>
+                </div>
             </div>
             {loading ? <p>Loading...</p> : (
                 <AdminTable 
