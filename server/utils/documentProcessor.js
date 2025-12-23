@@ -40,15 +40,15 @@ const indexDocument = async (document) => {
         console.log(`[Indexing] Starting for: ${document.title}`);
         let buffer;
 
-        if (document.fileUrl.startsWith('http')) {
-            console.log(`[Indexing] Fetching remote file: ${document.fileUrl}`);
-            // Use a clean axios config to avoid any global default headers
+        const url = (document.fileUrl || '').trim();
+
+        if (url.startsWith('http')) {
+            console.log(`[Indexing] Fetching remote file: ${url}`);
             const response = await axios({
                 method: 'get',
-                url: document.fileUrl,
+                url: url,
                 responseType: 'arraybuffer',
                 transformRequest: [(data, headers) => {
-                    // Remove common authorization headers that might cause 401 on external sites
                     delete headers.common['Authorization'];
                     delete headers.common['authorization'];
                     return data;
@@ -56,14 +56,14 @@ const indexDocument = async (document) => {
             });
             buffer = Buffer.from(response.data);
             console.log(`[Indexing] Remote file fetched successfully. Size: ${buffer.length} bytes`);
-        } else if (document.fileUrl.startsWith('data:')) {
-            console.log(`[Indexing] Processing Data URI (Base64)`);
-            const base64Data = document.fileUrl.split(';base64,').pop();
+        } else if (url.startsWith('data:') || url.includes(';base64,') || url.startsWith('JVBERi')) {
+            console.log(`[Indexing] Processing Data URI or Base64 string (starts with: ${url.substring(0, 20)}...)`);
+            const base64Data = url.includes(';base64,') ? url.split(';base64,').pop() : url;
             buffer = Buffer.from(base64Data, 'base64');
-            console.log(`[Indexing] Data URI processed successfully. Size: ${buffer.length} bytes`);
+            console.log(`[Indexing] Base64 processing successful. Size: ${buffer.length} bytes`);
         } else {
-            console.log(`[Indexing] Reading local file: ${document.fileUrl}`);
-            const filePath = path.join(__dirname, '..', document.fileUrl);
+            console.log(`[Indexing] Treating as local file path: ${url.substring(0, 50)}${url.length > 50 ? '...' : ''}`);
+            const filePath = path.isAbsolute(url) ? url : path.join(__dirname, '..', url);
             if (!fs.existsSync(filePath)) {
                 throw new Error(`File not found at path: ${filePath}`);
             }
