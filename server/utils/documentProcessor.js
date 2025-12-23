@@ -37,23 +37,28 @@ const chunkText = (text, size = 1500, overlap = 300) => {
 
 const indexDocument = async (document) => {
     try {
-        console.log(`Starting indexing for document: ${document.title}`);
+        console.log(`[Indexing] Starting for: ${document.title}`);
         let buffer;
+
         if (document.fileUrl.startsWith('http')) {
+            console.log(`[Indexing] Fetching remote file: ${document.fileUrl}`);
             const response = await axios.get(document.fileUrl, { responseType: 'arraybuffer' });
             buffer = Buffer.from(response.data);
+            console.log(`[Indexing] Remote file fetched successfully. Size: ${buffer.length} bytes`);
         } else {
+            console.log(`[Indexing] Reading local file: ${document.fileUrl}`);
             const filePath = path.join(__dirname, '..', document.fileUrl);
             if (!fs.existsSync(filePath)) {
                 throw new Error(`File not found at path: ${filePath}`);
             }
             buffer = fs.readFileSync(filePath);
+            console.log(`[Indexing] Local file read successfully. Size: ${buffer.length} bytes`);
         }
 
         const fullText = await extractTextFromPDF(buffer);
         const chunks = chunkText(fullText);
 
-        console.log(`Extracted ${chunks.length} chunks from document.`);
+        console.log(`[Indexing] Extracted ${chunks.length} chunks.`);
 
         // Clear existing chunks for this document
         await KnowledgeChunk.deleteMany({ document: document._id });
@@ -62,25 +67,33 @@ const indexDocument = async (document) => {
             const textChunk = chunks[i];
             if (textChunk.length < 50) continue; 
             
-            const embedding = await getEmbedding(textChunk);
-            await KnowledgeChunk.create({
-                text: textChunk,
-                embedding,
-                document: document._id,
-                metadata: {
-                    sourceTitle: document.title,
-                    category: document.category,
-                    chunkIndex: i
-                }
-            });
+            try {
+                const embedding = await getEmbedding(textChunk);
+                await KnowledgeChunk.create({
+                    text: textChunk,
+                    embedding,
+                    document: document._id,
+                    metadata: {
+                        sourceTitle: document.title,
+                        category: document.category,
+                        chunkIndex: i
+                    }
+                });
+            } catch (embedError) {
+                console.error(`[Indexing] Embedding failed for chunk ${i}:`, embedError.message);
+                throw embedError; // Re-throw to catch in outer block
+            }
         }
 
         document.isIndexed = true;
         await document.save();
-        console.log(`Successfully indexed document: ${document.title}`);
+        console.log(`[Indexing] SUCCESS: ${document.title}`);
     } catch (error) {
-        console.error(`Failed to index document ${document.title}:`, error);
-        // Don't throw, just log for background task
+        console.error(`[Indexing] FAILED for ${document.title}:`, error.message);
+        if (error.response) {
+            console.error(`Status: ${error.response.status}`);
+            console.error(`Data:`, error.response.data);
+        }
     }
 };
 
