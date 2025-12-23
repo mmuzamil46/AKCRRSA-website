@@ -1,3 +1,4 @@
+const asyncHandler = require('express-async-handler');
 const Document = require('../models/Document');
 const { indexDocument } = require('../utils/documentProcessor');
 
