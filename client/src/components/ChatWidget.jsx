@@ -29,12 +29,26 @@ const ChatWidget = () => {
 
         try {
             const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/chat`, { message: userMsg });
-            setMessages(prev => [...prev, { text: res.data.text, sender: 'bot' }]);
+            setMessages(prev => [...prev, { 
+                text: res.data.text, 
+                options: res.data.options || [], // Support for interactive buttons
+                sender: 'bot' 
+            }]);
         } catch (err) {
             setMessages(prev => [...prev, { text: "ይቅርታ፣ ችግር አጋጥሟል። እባክዎ ትንሽ ቆይተው እንደገና ይሞክሩ።", sender: 'bot' }]);
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleOptionSelect = (option) => {
+        setInput(option);
+        // We delay the send slightly to show the text in input if any, or just call handleSend
+        // Directly calling handleSend with a synthetic event or modified logic
+        setTimeout(() => {
+            const submitBtn = document.getElementById('chat-submit-btn');
+            if (submitBtn) submitBtn.click();
+        }, 100);
     };
 
     return (
@@ -75,7 +89,7 @@ const ChatWidget = () => {
                             {messages.map((msg, idx) => (
                                 <div 
                                     key={idx} 
-                                    className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                                    className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
                                 >
                                     <div className={`flex gap-2 max-w-[85%] ${msg.sender === 'user' ? 'flex-row-reverse' : ''}`}>
                                         <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm ${
@@ -91,6 +105,21 @@ const ChatWidget = () => {
                                             {msg.text}
                                         </div>
                                     </div>
+
+                                    {/* Clarification Buttons */}
+                                    {msg.options && msg.options.length > 0 && (
+                                        <div className="mt-2 ml-10 flex flex-wrap gap-2">
+                                            {msg.options.map((opt, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => handleOptionSelect(opt)}
+                                                    className="px-3 py-1.5 text-xs font-bold border-2 border-primary text-primary rounded-full hover:bg-primary hover:text-white transition-all active:scale-95"
+                                                >
+                                                    {opt}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                             {isLoading && (
@@ -114,6 +143,7 @@ const ChatWidget = () => {
                                 className="flex-1 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                             />
                             <button 
+                                id="chat-submit-btn"
                                 type="submit"
                                 disabled={!input.trim() || isLoading}
                                 className="bg-primary text-white p-2.5 rounded-xl hover:bg-secondary transition-colors disabled:opacity-50 shadow-lg shadow-primary/20 active:scale-95"
