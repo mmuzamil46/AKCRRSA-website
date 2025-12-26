@@ -23,7 +23,7 @@ const getEmbedding = async (text) => {
 const getChatResponse = async (query, context) => {
     try {
         const genAI = getGenAI();
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
         
         const prompt = `
 You are the official Virtual Assistant for the Addis Ketama Subcity Civil Registration and Residency Service Agency (AKCRRSA) in Addis Ababa, Ethiopia.
