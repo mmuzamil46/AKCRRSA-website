@@ -13,7 +13,8 @@ const getWoredas = asyncHandler(async (req, res) => {
 // @route   POST /api/woredas
 // @access  Private (Admin)
 const createWoreda = asyncHandler(async (req, res) => {
-  const { name, description, mapUrl, managerName, managerPhone, managerPhoto } = req.body;
+  const { name, description, mapUrl, managerName, managerPhone, managerPhoto, population, lat, lng } = req.body;
+  const { clearChatCache } = require('./chatController');
 
   const woreda = new Woreda({
     name,
@@ -22,9 +23,13 @@ const createWoreda = asyncHandler(async (req, res) => {
     managerName,
     managerPhone,
     managerPhoto,
+    population: population || 0,
+    lat: lat || 9.04923,
+    lng: lng || 38.71802,
   });
 
   const createdWoreda = await woreda.save();
+  clearChatCache();
   res.status(201).json(createdWoreda);
 });
 
@@ -32,7 +37,8 @@ const createWoreda = asyncHandler(async (req, res) => {
 // @route   PUT /api/woredas/:id
 // @access  Private (Admin)
 const updateWoreda = asyncHandler(async (req, res) => {
-  const { name, description, mapUrl, managerName, managerPhone, managerPhoto } = req.body;
+  const { name, description, mapUrl, managerName, managerPhone, managerPhoto, population, lat, lng } = req.body;
+  const { clearChatCache } = require('./chatController');
 
   const woreda = await Woreda.findById(req.params.id);
 
@@ -43,8 +49,12 @@ const updateWoreda = asyncHandler(async (req, res) => {
     woreda.managerName = managerName || woreda.managerName;
     woreda.managerPhone = managerPhone || woreda.managerPhone;
     woreda.managerPhoto = managerPhoto || woreda.managerPhoto;
+    woreda.population = population !== undefined ? population : woreda.population;
+    woreda.lat = lat !== undefined ? lat : woreda.lat;
+    woreda.lng = lng !== undefined ? lng : woreda.lng;
 
     const updatedWoreda = await woreda.save();
+    clearChatCache();
     res.json(updatedWoreda);
   } else {
     res.status(404);

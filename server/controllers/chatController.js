@@ -39,19 +39,27 @@ const fetchWebsiteContext = async () => {
     }
 
     try {
-        const [woredas, news, about] = await Promise.all([
-            Woreda.find().select('name description managerName managerPhone'),
+        const SubcityStats = require('../models/SubcityStats');
+        const [woredas, news, about, stats] = await Promise.all([
+            Woreda.find().select('name description managerName managerPhone population'),
             News.find().sort({ date: -1 }).limit(5).select('title content date'),
-            AboutContent.findOne().select('mission vision history')
+            AboutContent.findOne().select('mission vision history'),
+            SubcityStats.findOne()
         ]);
 
         let context = "--- OFFICIAL WEBSITE CONTENT ---\n\n";
 
+        // Subcity Stats Context
+        if (stats) {
+            context += `SUBCITY OVERVIEW:\n- Total Population: ${stats.totalPopulation}\n- Total Area: ${stats.totalArea}\n- Number of Woredas: ${stats.totalWoredas}\n- General Info: ${stats.description}\n\n`;
+        }
+
         // Woredas Context
         context += "WOREDA OFFICES (LOCATIONS & CONTACTS):\n";
         woredas.forEach(w => {
-            context += `- Name: ${w.name}\n  Manager: ${w.managerName}\n  Phone: ${w.managerPhone}\n  Info: ${w.description || 'N/A'}\n`;
+            context += `- Name: ${w.name}\n  Manager: ${w.managerName}\n  Phone: ${w.managerPhone}\n  Population: ${w.population}\n  Info: ${w.description || 'N/A'}\n`;
         });
+        // ... rest stays same
 
         // News Context
         context += "\nLATEST NEWS UPDATES:\n";

@@ -10,6 +10,7 @@ import Feedback from './pages/Feedback';
 import About from './pages/About';
 import Gallery from './pages/Gallery';
 import Contact from './pages/Contact';
+import SubcityData from './pages/SubcityData';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
 import Navbar from './components/Navbar';
@@ -44,6 +45,7 @@ function App() {
                   <Route path="/about" element={<About />} />
                   <Route path="/gallery" element={<Gallery />} />
                   <Route path="/contact" element={<Contact />} />
+                  <Route path="/subcity-data" element={<SubcityData />} />
                 </Routes>
               </main>
               <Footer />

@@ -110,6 +110,7 @@ const Navbar = () => {
           </div>
 
           <Link to="/woredas" className={`hover:text-secondary ${isActive('/woredas') ? 'text-secondary' : ''}`}>ወረዳዎች</Link>
+          <Link to="/subcity-data" className={`hover:text-secondary ${isActive('/subcity-data') ? 'text-secondary' : ''}`}>ስታትስቲክስ</Link>
           <Link to="/feedback" className={`hover:text-secondary ${isActive('/feedback') ? 'text-secondary' : ''}`}>አስተያየት</Link>
           <Link to="/about" className={`hover:text-secondary ${isActive('/about') ? 'text-secondary' : ''}`}>ስለእኛ</Link>
           <Link to="/gallery" className={`hover:text-secondary ${isActive('/gallery') ? 'text-secondary' : ''}`}>አውደ ርዕይ</Link>
@@ -168,6 +169,7 @@ const Navbar = () => {
               </div>
 
               <Link to="/woredas" onClick={toggleMenu} className="hover:text-secondary">ወረዳዎች</Link>
+              <Link to="/subcity-data" onClick={toggleMenu} className="hover:text-secondary">ስታትስቲክስ</Link>
               <Link to="/feedback" onClick={toggleMenu} className="hover:text-secondary">አስተያየት</Link>
               <Link to="/about" onClick={toggleMenu} className="hover:text-secondary">ስለእኛ</Link>
                <Link to="/documents" onClick={toggleMenu} className="hover:text-secondary">ሰነዶች</Link>

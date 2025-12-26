@@ -45,6 +45,7 @@ app.use('/api/about', require('./routes/aboutRoutes'));
 app.use('/api/gallery', require('./routes/galleryRoutes'));
 app.use('/api/manager', require('./routes/managerRoutes'));
 app.use('/api/social', require('./routes/socialRoutes'));
+app.use('/api/subcity-data', require('./routes/subcityDataRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
 
 

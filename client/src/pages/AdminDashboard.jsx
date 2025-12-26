@@ -18,6 +18,7 @@ import AdminAboutEditor from './admin/AdminAboutEditor';
 import AdminGalleryManager from './admin/AdminGalleryManager';
 import AdminManagerMessage from './admin/AdminManagerMessage';
 import AdminSocialManager from './admin/AdminSocialManager';
+import AdminSubcityDataManager from './admin/AdminSubcityDataManager';
 
 
 const AdminDashboard = () => {
@@ -71,6 +72,8 @@ const AdminDashboard = () => {
         return <AdminManagerMessage />;
       case 'social':
         return <AdminSocialManager />;
+      case 'subcity-data':
+        return <AdminSubcityDataManager />;
       default:
         return <DashboardHome />;
     }
@@ -110,6 +113,7 @@ const AdminDashboard = () => {
           <SidebarItem icon={<RiArticleLine />} label="News" active={activeTab === 'news'} onClick={() => handleTabChange('news')} />
           <SidebarItem icon={<RiServiceLine />} label="Services" active={activeTab === 'services'} onClick={() => handleTabChange('services')} />
           <SidebarItem icon={<RiMapPinUserLine />} label="Woredas" active={activeTab === 'woredas'} onClick={() => handleTabChange('woredas')} />
+          <SidebarItem icon={<RiInformationLine />} label="Subcity Data" active={activeTab === 'subcity-data'} onClick={() => handleTabChange('subcity-data')} />
           <div className="border-t border-white/10 my-2 pt-2 text-xs text-gray-400 font-bold px-4">Extras</div>
           <SidebarItem icon={<RiImage2Line />} label="Banners" active={activeTab === 'banners'} onClick={() => handleTabChange('banners')} />
           <SidebarItem icon={<RiNotification3Line />} label="Announcements" active={activeTab === 'announcements'} onClick={() => handleTabChange('announcements')} />

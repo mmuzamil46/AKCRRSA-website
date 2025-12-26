@@ -22,6 +22,18 @@ const woredaSchema = mongoose.Schema({
   },
   managerPhoto: {
      type: String // URL or path to image
+  },
+  population: {
+    type: Number,
+    default: 0
+  },
+  lat: {
+    type: Number,
+    default: 9.04923
+  },
+  lng: {
+    type: Number,
+    default: 38.71802
   }
 }, {
   timestamps: true,

@@ -14,6 +14,9 @@ const AdminWoredasManager = () => {
       mapUrl: '',
       managerName: '',
       managerPhone: '',
+      population: '',
+      lat: '',
+      lng: '',
     });
   
     const token = localStorage.getItem('adminToken');
@@ -54,13 +57,16 @@ const AdminWoredasManager = () => {
             mapUrl: item.mapUrl,
             managerName: item.managerName,
             managerPhone: item.managerPhone,
+            population: item.population || '',
+            lat: item.lat || '',
+            lng: item.lng || '',
         });
         setEditId(item._id);
         setShowModal(true);
     };
 
     const openAddModal = () => {
-        setFormData({ name: '', description: '', mapUrl: '', managerName: '', managerPhone: '' });
+        setFormData({ name: '', description: '', mapUrl: '', managerName: '', managerPhone: '', population: '', lat: '', lng: '' });
         setEditId(null);
         setShowModal(true);
     };
@@ -74,7 +80,7 @@ const AdminWoredasManager = () => {
             await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/woredas`, formData, config);
         }
         setShowModal(false);
-        setFormData({ name: '', description: '', mapUrl: '', managerName: '', managerPhone: '' });
+        setFormData({ name: '', description: '', mapUrl: '', managerName: '', managerPhone: '', population: '', lat: '', lng: '' });
         setEditId(null);
         fetchWoredas();
       } catch (err) {
@@ -84,6 +90,7 @@ const AdminWoredasManager = () => {
   
     const columns = [
       { header: 'Woreda Name', accessor: 'name' },
+      { header: 'Population', accessor: 'population' },
       { header: 'Manager', accessor: 'managerName' },
       { header: 'Phone', accessor: 'managerPhone' },
     ];
@@ -162,6 +169,41 @@ const AdminWoredasManager = () => {
                         className="w-full border p-2 rounded"
                         value={formData.managerPhone}
                         onChange={(e) => setFormData({...formData, managerPhone: e.target.value})}
+                        required
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                    <div>
+                        <label className="block text-sm font-bold mb-1">Population</label>
+                        <input 
+                        type="number" 
+                        className="w-full border p-2 rounded"
+                        value={formData.population}
+                        onChange={(e) => setFormData({...formData, population: e.target.value})}
+                        required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold mb-1">Latitude</label>
+                        <input 
+                        type="number" 
+                        step="any"
+                        className="w-full border p-2 rounded"
+                        value={formData.lat}
+                        onChange={(e) => setFormData({...formData, lat: e.target.value})}
+                        required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold mb-1">Longitude</label>
+                        <input 
+                        type="number" 
+                        step="any"
+                        className="w-full border p-2 rounded"
+                        value={formData.lng}
+                        onChange={(e) => setFormData({...formData, lng: e.target.value})}
                         required
                         />
                     </div>
