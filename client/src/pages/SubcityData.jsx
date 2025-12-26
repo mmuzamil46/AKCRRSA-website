@@ -223,6 +223,28 @@ const SubcityData = () => {
                                     <Tooltip direction="top" offset={[0, -10]} opacity={1}>
                                         <span className="font-bold">{w.name}</span>
                                     </Tooltip>
+                                    <Popup>
+                                        <div className="p-1 min-w-[200px]">
+                                            <h4 className="font-bold text-teal-800 text-lg border-b pb-1 mb-2">{w.name}</h4>
+                                            <p className="text-xs text-stone-600 mb-3 line-clamp-3">{w.description}</p>
+                                            <div className="space-y-1 text-xs">
+                                                <div className="flex justify-between">
+                                                    <span className="text-stone-500">የህዝብ ብዛት:</span>
+                                                    <span className="font-bold text-teal-900">{w.population?.toLocaleString() || 'N/A'}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-stone-500">ኃላፊ:</span>
+                                                    <span className="font-bold text-teal-900">{w.managerName || 'N/A'}</span>
+                                                </div>
+                                            </div>
+                                            <button 
+                                                onClick={() => handleWoredaSelect(w)}
+                                                className="mt-3 w-full py-1 text-[10px] bg-teal-50 text-teal-700 font-bold rounded-lg hover:bg-teal-600 hover:text-white transition-colors border border-teal-100"
+                                            >
+                                                ዝርዝር መረጃ አሳይ
+                                            </button>
+                                        </div>
+                                    </Popup>
                                 </Marker>
                             ))}
 
@@ -252,12 +274,34 @@ const SubcityData = () => {
                                     <>
                                         <h2 className="text-3xl font-bold text-teal-800 mb-4">{selectedWoreda.name}</h2>
                                         <p className="text-stone-600 leading-relaxed mb-6">{selectedWoreda.description}</p>
-                                        <div className="bg-white/80 backdrop-blur p-4 rounded-2xl flex items-center justify-between border border-teal-100">
+                                        
+                                        {/* Embedded Map Section */}
+                                        {selectedWoreda.mapUrl && (
+                                            <div className="mb-6 rounded-2xl overflow-hidden shadow-md border border-stone-200 h-48 bg-stone-100 relative group">
+                                                <iframe 
+                                                    src={selectedWoreda.mapUrl.includes('<iframe') ? 
+                                                        selectedWoreda.mapUrl.match(/src="([^"]+)"/)?.[1] : 
+                                                        selectedWoreda.mapUrl
+                                                    }
+                                                    width="100%" 
+                                                    height="100%" 
+                                                    style={{ border: 0 }} 
+                                                    allowFullScreen="" 
+                                                    loading="lazy"
+                                                    title={`${selectedWoreda.name} location`}
+                                                ></iframe>
+                                                <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors pointer-events-none flex items-center justify-center">
+                                                    <span className="bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-teal-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">Google Maps View</span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="bg-white/80 backdrop-blur p-4 rounded-2xl flex items-center justify-between border border-teal-100 mb-4">
                                             <div className="flex items-center gap-3">
                                                 <RiTeamLine className="text-2xl text-teal-600" />
                                                 <div className="text-left">
                                                     <p className="text-xs text-stone-500 font-bold uppercase tracking-wider">የህዝብ ብዛት</p>
-                                                    <p className="font-bold text-teal-900">{selectedWoreda.population.toLocaleString()}</p>
+                                                    <p className="font-bold text-teal-900">{selectedWoreda.population?.toLocaleString() || 'N/A'}</p>
                                                 </div>
                                             </div>
                                             {distance && (
@@ -269,6 +313,11 @@ const SubcityData = () => {
                                                     </div>
                                                 </div>
                                             )}
+                                        </div>
+
+                                        <div className="text-left space-y-2 border-t pt-4 border-stone-100">
+                                            <p className="text-sm"><strong>ኃላፊ:</strong> {selectedWoreda.managerName || 'ያልተገለጸ'}</p>
+                                            <p className="text-sm"><strong>ስልክ:</strong> {selectedWoreda.managerPhone || 'ያልተገለጸ'}</p>
                                         </div>
                                     </>
                                 ) : (
