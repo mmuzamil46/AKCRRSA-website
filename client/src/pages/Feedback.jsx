@@ -105,10 +105,9 @@ const Feedback = () => {
                   value={formData.serviceType}
                   onChange={e => setFormData({...formData, serviceType: e.target.value})}
                 >
-                  <option>Civil Registration</option>
-                  <option>Vital Events</option>
+                 
                   {services.map(s => <option key={s._id} value={s.title}>{s.title}</option>)}
-                  <option>Other</option>
+                  <option>ሌላ</option>
                 </select>
               </div>
               <div>
