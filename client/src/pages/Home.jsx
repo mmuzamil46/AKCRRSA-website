@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { RiIdCardFill, RiFileWarningFill, RiCake2Fill, RiHeartAddFill, RiHealthBookFill } from 'react-icons/ri';
 import axios from 'axios';
 import SEO from '../components/SEO';
+import ServiceStatsSlider from '../components/ServiceStatsSlider';
 
 const Home = () => {
   const [newsItems, setNewsItems] = useState([]);
@@ -39,6 +40,9 @@ const Home = () => {
       />
       <Hero />
       
+      {/* Cumulative Stats Section */}
+      <ServiceStatsSlider />
+
       {/* News Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
