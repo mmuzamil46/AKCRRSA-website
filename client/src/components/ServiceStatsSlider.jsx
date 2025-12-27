@@ -53,9 +53,9 @@ const ServiceStatsSlider = () => {
           <div>
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-primary flex items-center gap-3">
               <RiLineChartFill className="text-secondary" />
-              የበጀት ዓመቱ አፈጻጸም በቁጥር (Cumulative Performance)
+              የበጀት ዓመቱ አፈጻጸም በቁጥር 
             </h2>
-            <p className="text-gray-500 mt-2">እስካሁን በክፍለ ከተማው የተሰጡ አገልግሎቶች ጠቅላላ ድምር</p>
+            <p className="text-gray-500 mt-2">በ2018 በክፍለ ከተማው የተሰጡ አገልግሎቶች ጠቅላላ ድምር</p>
           </div>
         </div>
       </div>
