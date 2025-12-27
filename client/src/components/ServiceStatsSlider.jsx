@@ -44,7 +44,7 @@ const ServiceStatsSlider = () => {
   };
 
   // Double the stats for seamless loop
-  const displayStats = [...stats, ...stats, ...stats];
+  const displayStats = [...stats, ...stats];
 
   return (
     <section className="py-20 bg-gradient-to-b from-white to-gray-50 overflow-hidden" ref={containerRef}>
@@ -63,15 +63,17 @@ const ServiceStatsSlider = () => {
       <div className="relative w-full overflow-hidden py-5">
         <motion.div 
           className="flex gap-6 whitespace-nowrap"
-          animate={{ x: [0, -2000] }}
+          animate={{ x: [0, "-50%"] }}
           transition={{
             x: {
               repeat: Infinity,
               repeatType: "loop",
-              duration: 40,
+              duration: stats.length * 5, // Dynamic duration based on item count
               ease: "linear",
             },
           }}
+          // Smooth pause on hover
+          whileHover={{ animationPlayState: "paused" }}
           style={{ width: 'fit-content' }}
         >
           {displayStats.map((stat, index) => (
