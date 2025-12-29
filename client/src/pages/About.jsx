@@ -111,9 +111,9 @@ const About = () => {
               {/* Horizontal Connecting Line */}
               {heads.length > 0 && <div className="hidden md:block absolute top-0 left-1/4 right-1/4 h-0.5 bg-gray-300"></div>}
               
-              <div className="text-center mb-8">
+              {/* <div className="text-center mb-8">
                 <h3 className="text-xl font-bold text-gray-500 uppercase tracking-widest">Team Leaders</h3>
-              </div>
+              </div> */}
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
                 {leaders.map(person => (
