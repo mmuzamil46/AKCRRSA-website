@@ -233,6 +233,12 @@ const SubcityData = () => {
                                                     <span className="font-bold text-teal-900">{w.population?.toLocaleString() || 'N/A'}</span>
                                                 </div>
                                                 <div className="flex justify-between">
+                                                    <span className="text-stone-500">ከማዕከል ርቀት:</span>
+                                                    <span className="font-bold text-teal-900">
+                                                        {(L.latLng(subcityCoords[0], subcityCoords[1]).distanceTo(L.latLng(w.lat || 9.04923, w.lng || 38.71802)) / 1000).toFixed(2)} km
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between">
                                                     <span className="text-stone-500">ኃላፊ:</span>
                                                     <span className="font-bold text-teal-900">{w.managerName || 'N/A'}</span>
                                                 </div>
