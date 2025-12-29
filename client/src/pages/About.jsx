@@ -71,88 +71,98 @@ const About = () => {
         </div>
 
         {/* Staff Hierarchy Section */}
-        <section className="mt-20">
-          <div className="text-center mb-16">
+        {/* Updated for strict single-line tree structure */}
+        <section className="mt-20 overflow-x-auto pb-12">
+          <div className="text-center mb-12">
             <h2 className="text-4xl font-serif font-bold text-primary mb-4">የጽ/ቤቱ መዋቅር</h2>
             <div className="w-24 h-1 bg-secondary mx-auto"></div>
           </div>
 
-          {/* 1. Heads Section */}
-          {heads.length > 0 && (
-            <div className="flex justify-center mb-16">
-              {heads.map(person => (
-                <div key={person._id} className="relative group">
-                  <div className="bg-white rounded-xl shadow-xl overflow-hidden transform hover:-translate-y-2 transition-all duration-300 border-2 border-primary/10 max-w-sm">
-                    <div className="relative h-64 w-64 md:h-80 md:w-80 overflow-hidden">
-                      <img 
-                        src={person.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${person.image}` : person.image}
-                        alt={person.name}
-                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
-                        <span className="text-white font-bold tracking-wider uppercase">Lead Agency</span>
-                      </div>
-                    </div>
-                    <div className="p-6 text-center bg-white relative z-10">
-                      <h3 className="text-2xl font-bold text-gray-800 mb-1">{person.name}</h3>
-                      <p className="text-primary font-medium uppercase tracking-wide text-sm">{person.position}</p>
+          <div className="flex flex-col items-center min-w-max px-8">
+            {/* 1. Head (Root) */}
+            {heads.map(person => (
+              <div key={person._id} className="relative flex flex-col items-center z-10">
+                <div className="bg-white rounded-xl shadow-xl overflow-hidden border-2 border-primary/10 w-64 group hover:-translate-y-1 transition-transform duration-300 relative z-20">
+                  <div className="h-64 overflow-hidden relative">
+                    <img 
+                      src={person.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${person.image}` : person.image}
+                      alt={person.name}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-2">
+                       <span className="text-white font-bold text-sm tracking-widest uppercase">የጽ/ቤት ሀላፊ</span>
                     </div>
                   </div>
-                  {/* Connector Line Logic (Visual Only) */}
-                  <div className="hidden md:block absolute top-full left-1/2 w-0.5 h-16 bg-gray-300 -translate-x-1/2 z-0"></div>
+                  <div className="p-4 text-center bg-white">
+                    <h3 className="text-xl font-bold text-gray-800">{person.name}</h3>
+                    <p className="text-primary font-medium text-xs uppercase tracking-wide mt-1">{person.position}</p>
+                  </div>
                 </div>
-              ))}
-            </div>
-          )}
+                {/* Connector Down from Head */}
+                {leaders.length > 0 && <div className="w-0.5 h-16 bg-gray-400"></div>}
+              </div>
+            ))}
 
-          {/* 2. Team Leaders Section */}
-          {leaders.length > 0 && (
-            <div className="relative pt-8">
-              {/* Horizontal Connecting Line */}
-              {heads.length > 0 && <div className="hidden md:block absolute top-0 left-1/4 right-1/4 h-0.5 bg-gray-300"></div>}
-              
-              {/* <div className="text-center mb-8">
-                <h3 className="text-xl font-bold text-gray-500 uppercase tracking-widest">Team Leaders</h3>
-              </div> */}
+            {/* 2. Team Leaders (Children) - Strict Single Line */}
+            {leaders.length > 0 && (
+              <div className="relative flex justify-center gap-12">
+                 {/* 
+                     Connector Logic: 
+                     We draw a single horizontal line that spans from the center of the first child 
+                     to the center of the last child.
+                     Since dimensions are fixed (w-48 = 12rem), the center is 6rem.
+                 */}
+                 {leaders.length > 1 && (
+                     <div className="absolute top-0 h-0.5 bg-gray-400" 
+                          style={{
+                              left: '6rem', // Center of first card
+                              right: '6rem' // Center of last card
+                          }}
+                     ></div>
+                 )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
-                {leaders.map(person => (
-                  <div key={person._id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 w-full max-w-xs group border border-gray-100">
-                    <div className="relative h-64 overflow-hidden bg-gray-100">
-                      <img 
-                        src={person.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${person.image}` : person.image}
-                        alt={person.name}
-                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                      />
-                    </div>
-                    <div className="p-4 text-center border-t border-primary/5">
-                      <h4 className="text-lg font-bold text-gray-800">{person.name}</h4>
-                      <p className="text-sm text-secondary font-medium mt-1">{person.position}</p>
+                {leaders.map((person, index) => (
+                  <div key={person._id} className="flex flex-col items-center relative">
+                    {/* Vertical Line Connection to the Horizontal Bar */}
+                    <div className="w-0.5 h-8 bg-gray-400"></div>
+                    
+                    <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 w-48 group hover:shadow-xl transition-shadow relative z-20">
+                      <div className="h-48 overflow-hidden bg-gray-100 relative">
+                         <img 
+                          src={person.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${person.image}` : person.image}
+                          alt={person.name}
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      <div className="p-3 text-center border-t border-gray-100">
+                        <h4 className="text-sm font-bold text-gray-800">{person.name}</h4>
+                        <p className="text-xs text-secondary font-medium mt-1 line-clamp-2">{person.position}</p>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* 3. Other Staff Section (Optional) */}
+          {/* 3. General Staff Grid */}
           {members.length > 0 && (
-            <div className="mt-16 pt-16 border-t border-gray-200">
-               <div className="text-center mb-8">
-                <h3 className="text-xl font-bold text-gray-500 uppercase tracking-widest">Our Staff</h3>
+            <div className="mt-24 pt-12 border-t border-gray-100 container mx-auto px-4">
+               <div className="text-center mb-10">
+                <h3 className="text-lg font-bold text-gray-400 uppercase tracking-widest">General Staff</h3>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
                 {members.map(person => (
-                  <div key={person._id} className="text-center group">
-                    <div className="w-32 h-32 mx-auto rounded-full overflow-hidden mb-4 border-4 border-gray-100 group-hover:border-primary/20 transition-colors shadow-sm">
+                  <div key={person._id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow text-center group">
+                    <div className="w-20 h-20 mx-auto rounded-full overflow-hidden mb-3 border-2 border-gray-100 group-hover:border-primary/30 transition-colors">
                       <img 
                         src={person.image.startsWith('/uploads') ? `${import.meta.env.VITE_API_BASE_URL}${person.image}` : person.image}
                         alt={person.name}
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <h5 className="font-bold text-gray-800">{person.name}</h5>
-                    <p className="text-xs text-gray-500 uppercase">{person.position}</p>
+                    <h5 className="font-bold text-gray-800 text-sm">{person.name}</h5>
+                    <p className="text-xs text-gray-500 mt-1">{person.position}</p>
                   </div>
                 ))}
               </div>
