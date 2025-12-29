@@ -19,6 +19,7 @@ import AdminGalleryManager from './admin/AdminGalleryManager';
 import AdminManagerMessage from './admin/AdminManagerMessage';
 import AdminSocialManager from './admin/AdminSocialManager';
 import AdminSubcityDataManager from './admin/AdminSubcityDataManager';
+import AdminStaffManager from './admin/AdminStaffManager';
 
 
 const AdminDashboard = () => {
@@ -74,6 +75,8 @@ const AdminDashboard = () => {
         return <AdminSocialManager />;
       case 'subcity-data':
         return <AdminSubcityDataManager />;
+      case 'staff':
+        return <AdminStaffManager />;
       default:
         return <DashboardHome />;
     }
@@ -110,6 +113,7 @@ const AdminDashboard = () => {
         <nav className="flex-grow p-4 space-y-2 mt-16 lg:mt-0">
           <SidebarItem icon={<RiDashboardLine />} label="Dashboard" active={activeTab === 'dashboard'} onClick={() => handleTabChange('dashboard')} />
           <SidebarItem icon={<FaUserTie />} label="Manager Message" active={activeTab === 'manager'} onClick={() => handleTabChange('manager')} />
+          <SidebarItem icon={<FaUserTie />} label="Staff Team" active={activeTab === 'staff'} onClick={() => handleTabChange('staff')} />
           <SidebarItem icon={<RiArticleLine />} label="News" active={activeTab === 'news'} onClick={() => handleTabChange('news')} />
           <SidebarItem icon={<RiServiceLine />} label="Services" active={activeTab === 'services'} onClick={() => handleTabChange('services')} />
           <SidebarItem icon={<RiMapPinUserLine />} label="Woredas" active={activeTab === 'woredas'} onClick={() => handleTabChange('woredas')} />
