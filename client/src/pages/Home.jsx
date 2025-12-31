@@ -8,19 +8,34 @@ import ServiceStatsSlider from '../components/ServiceStatsSlider';
 
 const Home = () => {
   const [newsItems, setNewsItems] = useState([]);
+  const [visitorCount, setVisitorCount] = useState(0);
 
   useEffect(() => {
-    const fetchNews = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/news`);
-        // Get latest 3 news items
-        setNewsItems(res.data.slice(0, 3));
+        // Fetch News
+        const newsRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/news`);
+        setNewsItems(newsRes.data.slice(0, 3));
+
+        // Increment & Fetch Visitor Count
+        // Use a session storage check to avoid counting page reloads in same session if desired, 
+        // but for now simple hit counting on mount:
+        if (!sessionStorage.getItem('visited')) {
+             const visitRes = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/stats/visit`);
+             setVisitorCount(visitRes.data.count);
+             sessionStorage.setItem('visited', 'true');
+        } else {
+             // Just get, don't increment
+             const visitRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/stats/visit`);
+             setVisitorCount(visitRes.data.count);
+        }
+
       } catch (err) {
-        console.error('Error fetching news:', err);
+        console.error('Error fetching data:', err);
       }
     };
 
-    fetchNews();
+    fetchData();
   }, []);
 
   const services = [
@@ -108,6 +123,16 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Visitor Counter Footer Section */}
+      <div className="bg-primary text-white py-4 text-center border-t border-white/10">
+        <div className="container mx-auto px-4 flex items-center justify-center gap-2 text-sm opacity-80">
+          <span>Visitors:</span>
+          <span className="font-mono font-bold bg-white/10 px-2 py-0.5 rounded text-secondary">
+             {visitorCount.toLocaleString()}
+          </span>
+        </div>
+      </div>
     </>
   );
 };
