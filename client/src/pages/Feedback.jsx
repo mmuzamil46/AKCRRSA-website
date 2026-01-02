@@ -8,8 +8,8 @@ const Feedback = () => {
     const [formData, setFormData] = useState({
       userName: '',
       phone: '',
-      serviceType: 'Civil Registration',
-      woredaOffice: 'Other',
+      serviceType: 'ሌላ',
+      woredaOffice: 'ክፍለከተማ',
       rating: 5,
       comment: ''
     });
