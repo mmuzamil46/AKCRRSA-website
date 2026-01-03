@@ -67,7 +67,7 @@ const Navbar = () => {
         </Link>
 
         {/* Animated Marquee (between Logo and Menu) */}
-        <div className="hidden lg:flex flex-1 mx-8 overflow-hidden relative h-10 items-center border-x border-gray-100">
+        <div className="flex flex-1 mx-2 lg:mx-8 overflow-hidden relative h-10 items-center border-x border-gray-100">
           <motion.div
             initial={{ x: '100%' }}
             animate={{ 
