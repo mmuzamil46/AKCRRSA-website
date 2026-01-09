@@ -89,7 +89,7 @@ const Footer = () => {
       </div>
 
       <div className="border-t border-gray-700 mt-10 pt-6 text-center text-sm text-gray-400">
-        <p>&copy; 2023 CRRSAAK / Zhell tech inc. All rights Reserved.</p>
+        <p>&copy; {new Date().getFullYear()} AKCRRSA. All Rights Reserved. | Developed by Zhell Tech Inc.</p>
       </div>
     </footer>
   );
