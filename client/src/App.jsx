@@ -18,6 +18,8 @@ import Footer from './components/Footer';
 import SocialSidebar from './components/SocialSidebar';
 import ChatWidget from './components/ChatWidget';
 
+import RemoteEntry from './pages/RemoteEntry';
+
 function App() {
   return (
     <Router>
@@ -26,6 +28,7 @@ function App() {
           {/* Admin Routes - No Navbar/Footer */}
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/remote-entry" element={<RemoteEntry />} />
 
           {/* Public Routes - With Navbar/Footer */}
           <Route path="*" element={

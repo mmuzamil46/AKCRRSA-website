@@ -49,6 +49,7 @@ app.use('/api/subcity-data', require('./routes/subcityDataRoutes'));
 app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/stats', require('./routes/statsRoutes'));
 app.use('/api/staff', require('./routes/staffRoutes'));
+app.use('/api/ontime-reg', require('./routes/remoteReportRoutes'));
 
 
 // Make uploads folder static
