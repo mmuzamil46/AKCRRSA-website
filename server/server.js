@@ -50,6 +50,7 @@ app.use('/api/chat', require('./routes/chatRoutes'));
 app.use('/api/stats', require('./routes/statsRoutes'));
 app.use('/api/staff', require('./routes/staffRoutes'));
 app.use('/api/ontime-reg', require('./routes/remoteReportRoutes'));
+app.use('/api/officers', require('./routes/officerRoutes'));
 
 
 // Make uploads folder static

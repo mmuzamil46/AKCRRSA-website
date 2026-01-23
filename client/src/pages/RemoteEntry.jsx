@@ -38,8 +38,8 @@ const RemoteEntry = () => {
       // Given typical setups, '/api/ontime-reg' is safest if proxy is set up.
       // If not, we might need `${import.meta.env.VITE_API_URL}/api/ontime-reg`
       
-      const apiUrl = import.meta.env.VITE_API_URL 
-        ? `${import.meta.env.VITE_API_URL}/api/ontime-reg` 
+      const apiUrl = import.meta.env.VITE_API_BASE_URL 
+        ? `${import.meta.env.VITE_API_BASE_URL}/api/ontime-reg` 
         : '/api/ontime-reg';
 
       await axios.post(apiUrl, {
