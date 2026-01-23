@@ -40,7 +40,7 @@ const authOfficer = asyncHandler(async (req, res) => {
 // @route   POST /api/officers
 // @access  Public/Admin? (For now Public to create first user)
 const registerOfficer = asyncHandler(async (req, res) => {
-  const { fullName, username, phone, password, woreda, role } = req.body;
+  const { fullName, username, phone, password, woreda, role, hospitalName } = req.body;
 
   if (!fullName || !username || !password) {
     res.status(400);
@@ -66,7 +66,8 @@ const registerOfficer = asyncHandler(async (req, res) => {
     phone,
     password: hashedPassword,
     woreda,
-    role
+    role,
+    hospitalName
   });
 
   if (officer) {
@@ -74,6 +75,7 @@ const registerOfficer = asyncHandler(async (req, res) => {
       _id: officer.id,
       username: officer.username,
       fullName: officer.fullName,
+      hospitalName: officer.hospitalName,
       token: generateToken(officer._id),
     });
   } else {

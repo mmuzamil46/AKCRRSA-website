@@ -38,6 +38,10 @@ const officerSchema = new Schema(
       type: String,
       trim: true,
     },
+    hospitalName: {
+      type: String,
+      trim: true,
+    },
     isActive: {
       type: Boolean,
       default: true,

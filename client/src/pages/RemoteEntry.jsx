@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './RemoteEntry.css';
 
 const RemoteEntry = () => {
   const [selectedType, setSelectedType] = useState(null);
+  const [officerInfo, setOfficerInfo] = useState(null);
   const [formData, setFormData] = useState({
     referenceNumber: '',
     gender: '',
@@ -14,11 +16,47 @@ const RemoteEntry = () => {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+
+  // Protect Route & Load Officer Info
+  useEffect(() => {
+    const token = localStorage.getItem('officerToken');
+    const info = localStorage.getItem('officerInfo');
+
+    if (!token || !info) {
+      navigate('/officer-login');
+      return;
+    }
+
+    const parsedInfo = JSON.parse(info);
+    setOfficerInfo(parsedInfo);
+    
+    // Auto-fill constant data
+    setFormData(prev => ({
+        ...prev,
+        woreda: parsedInfo.woreda || '',
+        hospitalName: parsedInfo.hospitalName || ''
+    }));
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('officerToken');
+    localStorage.removeItem('officerInfo');
+    navigate('/officer-login');
+  };
 
   const handleTypeSelect = (type) => {
     setSelectedType(type);
     setMessage('');
-    setFormData(prev => ({ ...prev, referenceNumber: '', gender: '' }));
+    // Reset variable fields but keep constants
+    setFormData(prev => ({ 
+        ...prev, 
+        referenceNumber: '', 
+        gender: '',
+        // Ensure constants persist
+        woreda: officerInfo?.woreda || '',
+        hospitalName: officerInfo?.hospitalName || ''
+    }));
   };
 
   const handleChange = (e) => {
@@ -31,13 +69,6 @@ const RemoteEntry = () => {
     setMessage('');
 
     try {
-      // Assuming the API is relative or configured in axios defaults for this project
-      // If deployed separately, user might need to adjust base URL.
-      // For AKCRRSA, it likely uses a proxy or configured base URL.
-      // We'll trust relative path '/api/ontime-reg' if proxy exists, or absolute if needed.
-      // Given typical setups, '/api/ontime-reg' is safest if proxy is set up.
-      // If not, we might need `${import.meta.env.VITE_API_URL}/api/ontime-reg`
-      
       const apiUrl = import.meta.env.VITE_API_BASE_URL 
         ? `${import.meta.env.VITE_API_BASE_URL}/api/ontime-reg` 
         : '/api/ontime-reg';
@@ -50,7 +81,11 @@ const RemoteEntry = () => {
       setMessage('በተሳካ ሁኔታ ተመዝግቧል (Registered Successfully)!');
       setTimeout(() => {
         setSelectedType(null); // Reset to main screen
-        setFormData({ ...formData, referenceNumber: '', gender: '' });
+        setFormData(prev => ({ 
+            ...prev, 
+            referenceNumber: '', 
+            gender: '' 
+        }));
         setMessage('');
       }, 2000);
 
@@ -62,10 +97,37 @@ const RemoteEntry = () => {
     }
   };
 
+  if (!officerInfo) return null; // Loading state
+
+  // Navigation Bar for Officer
+  const OfficerNavbar = () => (
+      <nav className="flex justify-between items-center bg-white shadow-md p-4 mb-6 rounded-lg">
+          <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xl">
+                  {officerInfo.fullName.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                  <h3 className="font-bold text-gray-800">{officerInfo.fullName}</h3>
+                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Officer</span>
+              </div>
+          </div>
+          <button 
+            onClick={handleLogout}
+            className="text-red-500 hover:text-red-700 font-semibold text-sm flex items-center gap-1"
+          >
+              Logout 
+              <span className="text-xl">›</span>
+          </button>
+      </nav>
+  );
+
   if (!selectedType) {
     return (
       <div className="remote-container">
-        <h1>Remote Reporting</h1>
+        <OfficerNavbar />
+        <h1 className="text-3xl font-bold mb-2">Remote Reporting</h1>
+        <p className="text-gray-500 mb-8">Select the type of report you want to register.</p>
+        
         <div className="button-grid">
           <button className="large-btn birth" onClick={() => handleTypeSelect('ልደት')}>
             <span className="icon">👶</span>
@@ -146,30 +208,33 @@ const RemoteEntry = () => {
           </div>
         </div>
 
-        <div className="form-group">
-            <label>ወረዳ (Woreda)</label>
-            <input 
-                type="text" 
-                name="woreda" 
-                value={formData.woreda} 
-                onChange={handleChange} 
-                required 
-                placeholder="Enter Woreda"
-            />
-        </div>
+        {/* Read-Only Auto-Filled Fields */}
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="form-group">
+                <label className="text-gray-500 text-sm">ወረዳ (Woreda)</label>
+                <input 
+                    type="text" 
+                    name="woreda" 
+                    value={formData.woreda} 
+                    readOnly
+                    className="bg-transparent border-none font-bold text-gray-700 p-0 focus:ring-0"
+                />
+            </div>
 
-        {(selectedType === 'ልደት' || selectedType === 'ሞት') && (
-          <div className="form-group">
-            <label>የጤና ተቋም ስም (Hospital Name)</label>
-            <input
-              type="text"
-              name="hospitalName"
-              value={formData.hospitalName}
-              onChange={handleChange}
-              placeholder="Enter Hospital Name"
-            />
-          </div>
-        )}
+            {(selectedType === 'ልደት' || selectedType === 'ሞት') && (
+            <div className="form-group">
+                <label className="text-gray-500 text-sm">የጤና ተቋም ስም (Hospital)</label>
+                <input
+                    type="text"
+                    name="hospitalName"
+                    value={formData.hospitalName}
+                    readOnly
+                    className="bg-transparent border-none font-bold text-gray-700 p-0 focus:ring-0"
+                    placeholder="Not Assigned"
+                />
+            </div>
+            )}
+        </div>
 
         {selectedType === 'ፍቺ' && (
           <div className="form-group">
