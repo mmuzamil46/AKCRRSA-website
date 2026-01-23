@@ -27,6 +27,7 @@ const authOfficer = asyncHandler(async (req, res) => {
       username: officer.username,
       fullName: officer.fullName,
       woreda: officer.woreda,
+      hospitalName:officer.hospitalName,
       role: officer.role,
       token: generateToken(officer._id),
     });
