@@ -15,10 +15,11 @@ const generateToken = (id) => {
 // @access  Public
 const authOfficer = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
+console.log(username,password);
 
   // Login with username instead of email, matching the Officer model
   const officer = await Officer.findOne({ username });
-
+console.log(officer);
   // Note: Original User.js model comments said "we'll hash before saving".
   // Assuming password in DB is hashed.
   if (officer && (await bcrypt.compare(password, officer.password))) {
