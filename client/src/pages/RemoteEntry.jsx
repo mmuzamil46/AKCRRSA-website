@@ -99,47 +99,157 @@ const RemoteEntry = () => {
 
   if (!officerInfo) return null; // Loading state
 
-  // Navigation Bar for Officer
+    // Dashboard State
+    const [stats, setStats] = useState({
+        total: 0,
+        today: 0,
+        byService: {},
+        byGender: {}
+    });
+
+    // Fetch stats on load
+    useEffect(() => {
+        if (officerInfo) {
+            fetchStats();
+        }
+    }, [officerInfo]);
+
+    const fetchStats = async () => {
+        try {
+            const apiUrl = import.meta.env.VITE_API_BASE_URL 
+                ? `${import.meta.env.VITE_API_BASE_URL}/api/ontime-reg/stats` 
+                : '/api/ontime-reg/stats';
+            
+            const res = await axios.get(apiUrl, {
+                params: {
+                    woreda: officerInfo.woreda,
+                    hospitalName: officerInfo.hospitalName
+                }
+            });
+            setStats(res.data);
+        } catch (err) {
+            console.error("Failed to fetch stats", err);
+        }
+    };
+
   const OfficerNavbar = () => (
-      <nav className="flex justify-between items-center bg-white shadow-md p-4 mb-6 rounded-lg">
-          <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xl">
+      <nav className="flex justify-between items-center bg-white shadow-sm p-4 mb-6 rounded-xl border border-gray-100">
+          <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
                   {officerInfo.fullName.charAt(0).toUpperCase()}
               </div>
               <div>
-                  <h3 className="font-bold text-gray-800">{officerInfo.fullName}</h3>
-                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Officer</span>
+                  <h3 className="font-bold text-gray-800 text-lg">{officerInfo.fullName}</h3>
+                  <div className="flex items-center gap-2">
+                       <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">Officer</span>
+                       <span className="text-xs text-gray-500">| {officerInfo.woreda}</span>
+                  </div>
               </div>
           </div>
           <button 
             onClick={handleLogout}
-            className="text-red-500 hover:text-red-700 font-semibold text-sm flex items-center gap-1"
+            className="text-red-500 hover:text-red-700 font-semibold text-sm flex items-center gap-2 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors"
           >
               Logout 
-              <span className="text-xl">›</span>
+              <span>›</span>
           </button>
       </nav>
   );
 
+  const StatCard = ({ title, value, icon, colorClass }) => (
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-start mb-4">
+              <div className={`p-3 rounded-xl ${colorClass} bg-opacity-10`}>
+                  <span className={`text-2xl ${colorClass.replace('bg-', 'text-')}`}>{icon}</span>
+              </div>
+              <span className="text-3xl font-bold text-gray-800">{value}</span>
+          </div>
+          <h4 className="text-gray-500 text-sm font-medium">{title}</h4>
+      </div>
+  );
+
   if (!selectedType) {
     return (
-      <div className="remote-container">
+      <div className="remote-container max-w-5xl mx-auto p-4">
         <OfficerNavbar />
-        <h1 className="text-3xl font-bold mb-2">Remote Reporting</h1>
-        <p className="text-gray-500 mb-8">Select the type of report you want to register.</p>
         
-        <div className="button-grid">
-          <button className="large-btn birth" onClick={() => handleTypeSelect('ልደት')}>
-            <span className="icon">👶</span>
-            <span className="label">ልደት (Birth)</span>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <StatCard 
+                title="Total Reports" 
+                value={stats.total} 
+                icon="📊" 
+                colorClass="bg-blue-500" 
+            />
+            <StatCard 
+                title="Today's Entries" 
+                value={stats.today} 
+                icon="📅" 
+                colorClass="bg-green-500" 
+            />
+             <StatCard 
+                title="Births Registered" 
+                value={stats.byService['ልደት'] || 0} 
+                icon="👶" 
+                colorClass="bg-purple-500" 
+            />
+            <StatCard 
+                title="Deaths Registered" 
+                value={stats.byService['ሞት'] || 0} 
+                icon="⚰️" 
+                colorClass="bg-gray-600" 
+            />
+        </div>
+
+        <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">New Registration</h2>
+            <p className="text-gray-500">Select a service category to start a new report.</p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <button 
+            className="group relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 text-left"
+            onClick={() => handleTypeSelect('ልደት')}
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform"></div>
+            <div className="relative z-10 flex flex-col h-full">
+                <span className="text-4xl mb-4 bg-green-100 w-16 h-16 flex items-center justify-center rounded-2xl text-green-600">👶</span>
+                <span className="text-xl font-bold text-gray-800 mb-1">ልደት (Birth)</span>
+                <span className="text-sm text-gray-500">Register new birth certificate</span>
+                <div className="mt-auto pt-4 flex items-center text-green-600 font-semibold text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                    Start Report →
+                </div>
+            </div>
           </button>
-          <button className="large-btn death" onClick={() => handleTypeSelect('ሞት')}>
-            <span className="icon">⚰️</span>
-            <span className="label">ሞት (Death)</span>
+
+          <button 
+            className="group relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 text-left"
+            onClick={() => handleTypeSelect('ሞት')}
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gray-100 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform"></div>
+            <div className="relative z-10 flex flex-col h-full">
+                <span className="text-4xl mb-4 bg-gray-200 w-16 h-16 flex items-center justify-center rounded-2xl text-gray-600">⚰️</span>
+                <span className="text-xl font-bold text-gray-800 mb-1">ሞት (Death)</span>
+                <span className="text-sm text-gray-500">Register new death certificate</span>
+                <div className="mt-auto pt-4 flex items-center text-gray-600 font-semibold text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                    Start Report →
+                </div>
+            </div>
           </button>
-          <button className="large-btn divorce" onClick={() => handleTypeSelect('ፍቺ')}>
-            <span className="icon">💔</span>
-            <span className="label">ፍቺ (Divorce)</span>
+
+          <button 
+            className="group relative overflow-hidden bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 text-left"
+            onClick={() => handleTypeSelect('ፍቺ')}
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform"></div>
+            <div className="relative z-10 flex flex-col h-full">
+                <span className="text-4xl mb-4 bg-red-100 w-16 h-16 flex items-center justify-center rounded-2xl text-red-600">💔</span>
+                <span className="text-xl font-bold text-gray-800 mb-1">ፍቺ (Divorce)</span>
+                <span className="text-sm text-gray-500">Register new divorce certificate</span>
+                <div className="mt-auto pt-4 flex items-center text-red-600 font-semibold text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                    Start Report →
+                </div>
+            </div>
           </button>
         </div>
       </div>
