@@ -18,6 +18,14 @@ const RemoteEntry = () => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
+  // Dashboard State
+  const [stats, setStats] = useState({
+      total: 0,
+      today: 0,
+      byService: {},
+      byGender: {}
+  });
+
   // Protect Route & Load Officer Info
   useEffect(() => {
     const token = localStorage.getItem('officerToken');
@@ -37,13 +45,61 @@ const RemoteEntry = () => {
         woreda: parsedInfo.woreda || '',
         hospitalName: parsedInfo.hospitalName || ''
     }));
+
+    // Trigger stats fetch after loading info
+    fetchStats(parsedInfo);
   }, [navigate]);
+
+   const fetchStats = async (info) => {
+        if (!info) return;
+        try {
+            const apiUrl = import.meta.env.VITE_API_BASE_URL 
+                ? `${import.meta.env.VITE_API_BASE_URL}/api/ontime-reg/stats` 
+                : '/api/ontime-reg/stats';
+            
+            const res = await axios.get(apiUrl, {
+                params: {
+                    woreda: info.woreda,
+                    hospitalName: info.hospitalName
+                }
+            });
+            setStats(res.data);
+        } catch (err) {
+            console.error("Failed to fetch stats", err);
+        }
+    };
 
   const handleLogout = () => {
     localStorage.removeItem('officerToken');
     localStorage.removeItem('officerInfo');
     navigate('/officer-login');
   };
+
+  if (!officerInfo) return null;
+
+  const OfficerNavbar = () => (
+      <nav className="flex justify-between items-center bg-white shadow-sm p-4 mb-6 rounded-xl border border-gray-100">
+          <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                  {officerInfo.fullName.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                  <h3 className="font-bold text-gray-800 text-lg">{officerInfo.fullName}</h3>
+                  <div className="flex items-center gap-2">
+                       <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">Officer</span>
+                       <span className="text-xs text-gray-500">| {officerInfo.woreda}</span>
+                  </div>
+              </div>
+          </div>
+          <button 
+            onClick={handleLogout}
+            className="text-red-500 hover:text-red-700 font-semibold text-sm flex items-center gap-2 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors"
+          >
+              Logout 
+              <span>›</span>
+          </button>
+      </nav>
+  );
 
   const handleTypeSelect = (type) => {
     setSelectedType(type);
@@ -87,6 +143,7 @@ const RemoteEntry = () => {
             gender: '' 
         }));
         setMessage('');
+        fetchStats(officerInfo); // Refresh stats
       }, 2000);
 
     } catch (error) {
@@ -96,41 +153,6 @@ const RemoteEntry = () => {
       setLoading(false);
     }
   };
-
-  if (!officerInfo) return null; // Loading state
-
-    // Dashboard State
-    const [stats, setStats] = useState({
-        total: 0,
-        today: 0,
-        byService: {},
-        byGender: {}
-    });
-
-    // Fetch stats on load
-    useEffect(() => {
-        if (officerInfo) {
-            fetchStats();
-        }
-    }, [officerInfo]);
-
-    const fetchStats = async () => {
-        try {
-            const apiUrl = import.meta.env.VITE_API_BASE_URL 
-                ? `${import.meta.env.VITE_API_BASE_URL}/api/ontime-reg/stats` 
-                : '/api/ontime-reg/stats';
-            
-            const res = await axios.get(apiUrl, {
-                params: {
-                    woreda: officerInfo.woreda,
-                    hospitalName: officerInfo.hospitalName
-                }
-            });
-            setStats(res.data);
-        } catch (err) {
-            console.error("Failed to fetch stats", err);
-        }
-    };
 
   const OfficerNavbar = () => (
       <nav className="flex justify-between items-center bg-white shadow-sm p-4 mb-6 rounded-xl border border-gray-100">
