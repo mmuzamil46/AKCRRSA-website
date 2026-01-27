@@ -54,14 +54,14 @@ const OfficerLogin = () => {
         
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700 ml-1">Username</label>
-            <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">👤</span>
+            <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Username</label>
+            <div className="relative group">
+                <span className="absolute left-5 top-1/2 -translate-y-1/2 text-xl group-focus-within:scale-110 transition-transform">👤</span>
                 <input 
                     type="text" 
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:bg-white focus:border-blue-500 focus:outline-none transition-all font-medium text-gray-800"
+                    className="w-full pl-14 pr-5 py-5 bg-gray-50/50 border border-gray-100 rounded-3xl focus:ring-[6px] focus:ring-blue-100 focus:bg-white focus:border-blue-500 focus:outline-none transition-all font-bold text-gray-900 placeholder:text-gray-300"
                     placeholder="Enter your username"
                     required 
                 />
@@ -69,14 +69,14 @@ const OfficerLogin = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700 ml-1">Password</label>
-            <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔒</span>
+            <label className="text-xs font-black text-gray-500 uppercase tracking-widest ml-1">Password</label>
+            <div className="relative group">
+                <span className="absolute left-5 top-1/2 -translate-y-1/2 text-xl group-focus-within:scale-110 transition-transform">🔒</span>
                 <input 
                     type="password" 
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-blue-100 focus:bg-white focus:border-blue-500 focus:outline-none transition-all font-medium text-gray-800"
+                    className="w-full pl-14 pr-5 py-5 bg-gray-50/50 border border-gray-100 rounded-3xl focus:ring-[6px] focus:ring-blue-100 focus:bg-white focus:border-blue-500 focus:outline-none transition-all font-bold text-gray-900 placeholder:text-gray-300"
                     placeholder="••••••••"
                     required 
                 />
@@ -85,10 +85,10 @@ const OfficerLogin = () => {
 
           <button 
             type="submit" 
-            className="group w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black py-4 rounded-2xl hover:shadow-xl hover:shadow-blue-500/30 transition-all duration-300 flex items-center justify-center gap-3 active:scale-95"
+            className="group w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-black py-5 rounded-3xl hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 flex items-center justify-center gap-3 active:scale-95 shadow-xl shadow-blue-500/10"
           >
-            Authenticate
-            <span className="group-hover:translate-x-1 transition-transform">→</span>
+            Access Dashboard
+            <span className="text-xl group-hover:translate-x-1 transition-transform">🚀</span>
           </button>
         </form>
 
