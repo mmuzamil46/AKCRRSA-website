@@ -23,7 +23,8 @@ const RemoteEntry = () => {
       total: 0,
       today: 0,
       byService: {},
-      byGender: {}
+      byGender: {},
+      recent: []
   });
 
   // Protect Route & Load Officer Info
@@ -75,32 +76,6 @@ const RemoteEntry = () => {
     navigate('/officer-login');
   };
 
-  if (!officerInfo) return null;
-
-  const OfficerNavbar = () => (
-      <nav className="flex justify-between items-center bg-white shadow-sm p-4 mb-6 rounded-xl border border-gray-100">
-          <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                  {officerInfo.fullName.charAt(0).toUpperCase()}
-              </div>
-              <div>
-                  <h3 className="font-bold text-gray-800 text-lg">{officerInfo.fullName}</h3>
-                  <div className="flex items-center gap-2">
-                       <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100">Officer</span>
-                       <span className="text-xs text-gray-500">| {officerInfo.woreda}</span>
-                  </div>
-              </div>
-          </div>
-          <button 
-            onClick={handleLogout}
-            className="text-red-500 hover:text-red-700 font-semibold text-sm flex items-center gap-2 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors"
-          >
-              Logout 
-              <span>›</span>
-          </button>
-      </nav>
-  );
-
   const handleTypeSelect = (type) => {
     setSelectedType(type);
     setMessage('');
@@ -148,17 +123,19 @@ const RemoteEntry = () => {
 
     } catch (error) {
       console.error('Error submitting report:', error);
-      setMessage('ስህተት ተፈጥሯል (Error occurred).');
+      setMessage(error.response?.data?.message || 'ስህተት ተፈጥሯል (Error occurred).');
     } finally {
       setLoading(false);
     }
   };
 
+  if (!officerInfo) return null;
+
   const OfficerNavbar = () => (
       <nav className="flex justify-between items-center bg-white shadow-sm p-4 mb-6 rounded-xl border border-gray-100">
           <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                  {officerInfo.fullName.charAt(0).toUpperCase()}
+                  {officerInfo.fullName?.charAt(0).toUpperCase() || 'O'}
               </div>
               <div>
                   <h3 className="font-bold text-gray-800 text-lg">{officerInfo.fullName}</h3>
@@ -209,7 +186,7 @@ const RemoteEntry = () => {
                 icon="📅" 
                 colorClass="bg-green-500" 
             />
-             <StatCard 
+            <StatCard 
                 title="Births Registered" 
                 value={stats.byService['ልደት'] || 0} 
                 icon="👶" 
@@ -274,6 +251,57 @@ const RemoteEntry = () => {
             </div>
           </button>
         </div>
+
+        {/* Recent Submissions */}
+        <div className="mt-12 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-6 border-b border-gray-50 flex justify-between items-center">
+                <h3 className="font-bold text-gray-800 text-lg flex items-center gap-2">
+                    <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                    Recent Activity
+                </h3>
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 py-1 bg-gray-50 rounded-full">Live Updates</span>
+            </div>
+            <div className="overflow-x-auto">
+                <table className="w-full text-left">
+                    <thead className="bg-[#fcfdff] text-gray-400 text-xs font-black uppercase tracking-widest border-b border-gray-50">
+                        <tr>
+                            <th className="px-6 py-4">Reference No</th>
+                            <th className="px-6 py-4">Type</th>
+                            <th className="px-6 py-4">Gender</th>
+                            <th className="px-6 py-4">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                        {stats.recent && stats.recent.length > 0 ? (
+                            stats.recent.map((rpt, idx) => (
+                                <tr key={rpt._id} className="hover:bg-gray-50 transition-colors group">
+                                    <td className="px-6 py-4 font-mono font-bold text-blue-600">{rpt.referenceNumber}</td>
+                                    <td className="px-6 py-4">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                            rpt.serviceName === 'ልደት' ? 'bg-green-100 text-green-700' :
+                                            rpt.serviceName === 'ሞት' ? 'bg-gray-100 text-gray-700' : 'bg-red-100 text-red-700'
+                                        }`}>
+                                            {rpt.serviceName}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-gray-600 font-medium">{rpt.gender}</td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-2 text-green-600 font-bold text-sm">
+                                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                            Synced
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="4" className="px-6 py-10 text-center text-gray-400 font-medium">No recent activity found.</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+        </div>
       </div>
     );
   }
@@ -285,7 +313,7 @@ const RemoteEntry = () => {
         <h2>{selectedType} መመዝገቢያ</h2>
       </div>
 
-      {message && <div className={`message ${message.includes('Error') ? 'error' : 'success'}`}>{message}</div>}
+      {message && <div className={`message ${message.includes('Error') || message.includes('exists') ? 'error' : 'success'}`}>{message}</div>}
 
       <form onSubmit={handleSubmit} className="remote-form">
         <div className="form-group">

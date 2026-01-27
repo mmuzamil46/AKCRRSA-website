@@ -111,11 +111,14 @@ const getOfficerStats = async (req, res) => {
       { $group: { _id: "$gender", count: { $sum: 1 } } }
     ]);
 
-    // Breakdown Today
+    // Today's total
     const today = new Date();
     today.setHours(0,0,0,0);
     const todayQuery = { ...query, date: { $gte: today } };
     const todayCount = await OnTimeReg.countDocuments(todayQuery);
+
+    // Recent 5 entries
+    const recent = await OnTimeReg.find(query).sort({ createdAt: -1 }).limit(5);
 
     const formatStats = (agg) => {
       const map = {};
@@ -127,7 +130,8 @@ const getOfficerStats = async (req, res) => {
       total,
       today: todayCount,
       byService: formatStats(byService),
-      byGender: formatStats(byGender)
+      byGender: formatStats(byGender),
+      recent
     });
 
   } catch (error) {

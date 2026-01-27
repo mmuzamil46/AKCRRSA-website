@@ -1,3 +1,17 @@
+// Polyfill for DOMMatrix (required by some pdf-parse / pdfjs-dist versions in Node)
+if (!global.DOMMatrix) {
+    global.DOMMatrix = class DOMMatrix {
+        constructor() {
+            this.a = 1; this.b = 0; this.c = 0; this.d = 1; this.e = 0; this.f = 0;
+        }
+        setMatrixValue(str) { return this; }
+        translate(x, y, z) { return this; }
+        scale(scaleX, scaleY, scaleZ) { return this; }
+        rotate(rotX, rotY, rotZ) { return this; }
+        multiply(other) { return this; }
+    };
+}
+
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
