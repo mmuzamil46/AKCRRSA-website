@@ -309,7 +309,7 @@ const RemoteEntry = () => {
                             value={formData.referenceNumber}
                             onChange={handleChange}
                             required
-                            placeholder="e.g. 1234/2016"
+                            placeholder=""
                             className="w-full bg-white border border-gray-200 p-4 rounded-2xl focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-gray-800 placeholder:text-gray-300"
                         />
                     </div>
