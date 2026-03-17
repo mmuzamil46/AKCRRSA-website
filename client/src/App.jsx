@@ -20,6 +20,7 @@ import ChatWidget from './components/ChatWidget';
 
 import RemoteEntry from './pages/RemoteEntry';
 import OfficerLogin from './pages/OfficerLogin';
+import FlipbookDemo from './pages/FlipbookDemo';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/officer-login" element={<OfficerLogin />} />
           <Route path="/remote-entry" element={<RemoteEntry />} />
+          <Route path="/award" element={<FlipbookDemo />} />
 
           {/* Public Routes - With Navbar/Footer */}
           <Route path="*" element={

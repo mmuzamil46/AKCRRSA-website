@@ -1,0 +1,184 @@
+.flipbook-wrapper-fullscreen {
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+}
+
+.flipbook-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  perspective: 2500px;
+  width: 100%;
+  height: 100%;
+}
+
+.flipbook-perspective {
+  position: relative;
+  width: 600px;
+  max-width: 95vw;
+  height: 85vh;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.flipbook-perspective.is-open {
+  transform: translateX(25%) rotateX(5deg);
+}
+
+.flipbook-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px 12px 12px 4px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  backface-visibility: hidden;
+}
+
+.page-content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: #fdfbf7;
+}
+
+.page-content img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Page Crease Effect */
+.page-crease {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.inside-left .page-crease {
+  right: 0;
+  background: linear-gradient(to left, rgba(0,0,0,0.2), transparent);
+}
+
+.inside-right .page-crease {
+  left: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.2), transparent);
+}
+
+/* Inside Pages Layout */
+.inside-left {
+  z-index: 1;
+  left: 0;
+  transform-origin: right center;
+  transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.is-open .inside-left {
+  transform: translateX(-100%) rotateY(0deg);
+}
+
+.inside-right {
+  z-index: 0;
+  left: 0;
+}
+
+/* Cover Styling */
+.cover {
+  z-index: 5;
+  transform-origin: left center;
+}
+
+.cover-front, .cover-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+
+.cover-front {
+  background: #1a237e;
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.cover-back {
+  background: #1a237e;
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+.leather-texture {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.2;
+  background-image: url('https://www.transparenttextures.com/patterns/leather.png');
+  pointer-events: none;
+}
+
+.gold-trim {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+  border: 3px solid #d4af37;
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+.premium-paper {
+  width: 100%;
+  height: 100%;
+  background: #f4efdf;
+  box-shadow: inset 5px 0 15px rgba(0,0,0,0.1);
+}
+
+/* Animated Shadow */
+.flipbook-shadow {
+  position: absolute;
+  bottom: -30px;
+  left: 5%;
+  width: 90%;
+  height: 20px;
+  background: rgba(0,0,0,0.4);
+  filter: blur(15px);
+  border-radius: 50%;
+  transition: all 1.2s ease;
+  z-index: -1;
+}
+
+.is-open .flipbook-shadow {
+  width: 180%;
+  left: -90%;
+  bottom: -50px;
+  background: rgba(0,0,0,0.3);
+  transform: scale(1.1);
+}
