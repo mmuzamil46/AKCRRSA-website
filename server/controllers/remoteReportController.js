@@ -140,4 +140,36 @@ const getOfficerStats = async (req, res) => {
   }
 };
 
-module.exports = { createRemoteReport, cleanupDuplicates, getOfficerStats };
+// @desc    Get reports by date range
+// @route   GET /api/ontime-reg/reports
+// @access  Public (should use auth)
+const getReportsByDateRange = async (req, res) => {
+  try {
+    const { startDate, endDate, woreda, hospitalName } = req.query;
+
+    if (!woreda || !startDate || !endDate) {
+      return res.status(400).json({ message: 'Woreda, startDate, and endDate are required' });
+    }
+
+    let query = { 
+        woreda,
+        date: {
+            // Include entire end date by setting time to 23:59:59.999
+            $gte: new Date(startDate),
+            $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999))
+        }
+    };
+    if (hospitalName && hospitalName !== 'undefined' && hospitalName !== 'null' && hospitalName !== '') {
+        query.hospitalName = hospitalName;
+    }
+
+    const reports = await OnTimeReg.find(query).sort({ date: 1 });
+    
+    res.json(reports);
+  } catch (error) {
+    console.error('Error fetching reports by date range:', error);
+    res.status(500).json({ message: 'Error fetching reports' });
+  }
+};
+
+module.exports = { createRemoteReport, cleanupDuplicates, getOfficerStats, getReportsByDateRange };

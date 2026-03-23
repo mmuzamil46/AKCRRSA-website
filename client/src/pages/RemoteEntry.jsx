@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import './RemoteEntry.css';
 
 const RemoteEntry = () => {
@@ -16,6 +18,8 @@ const RemoteEntry = () => {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [reportDates, setReportDates] = useState({ start: '', end: '' });
+  const [isGenerating, setIsGenerating] = useState(false);
   const navigate = useNavigate();
 
   // Dashboard State
@@ -126,6 +130,129 @@ const RemoteEntry = () => {
       setMessage(error.response?.data?.message || 'ስህተት ተፈጥሯል (Error occurred).');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const generatePDFReport = async () => {
+    if (!reportDates.start || !reportDates.end) {
+        setMessage('እባክዎ መነሻ እና መድረሻ ቀን ያስገቡ (Please select start and end dates)');
+        return;
+    }
+    setIsGenerating(true);
+    setMessage('');
+
+    try {
+        const apiUrl = import.meta.env.VITE_API_BASE_URL 
+            ? `${import.meta.env.VITE_API_BASE_URL}/api/ontime-reg/reports` 
+            : '/api/ontime-reg/reports';
+            
+        const res = await axios.get(apiUrl, {
+            params: {
+                woreda: officerInfo.woreda,
+                hospitalName: officerInfo.hospitalName,
+                startDate: reportDates.start,
+                endDate: reportDates.end
+            }
+        });
+        
+        const data = res.data;
+        if (data.length === 0) {
+            setMessage('በተመረጠው ቀን ምንም መረጃ የለም (No records found for selected dates)');
+            setIsGenerating(false);
+            return;
+        }
+
+        const services = ['ልደት', 'ሞት', 'ፍቺ'];
+        const aggregated = {};
+        services.forEach(s => aggregated[s] = {});
+        
+        data.forEach(item => {
+            const sName = item.serviceName;
+            if (!aggregated[sName]) return;
+            const dateStr = new Date(item.date).toISOString().split('T')[0];
+            
+            if (!aggregated[sName][dateStr]) {
+                aggregated[sName][dateStr] = { male: 0, female: 0, total: 0 };
+            }
+            
+            if (item.gender === 'ወንድ') aggregated[sName][dateStr].male += 1;
+            else if (item.gender === 'ሴት') aggregated[sName][dateStr].female += 1;
+            aggregated[sName][dateStr].total += 1;
+        });
+
+        const doc = new jsPDF();
+        doc.setFontSize(18);
+        doc.text('Daily Report Summary', 14, 20);
+        
+        doc.setFontSize(12);
+        doc.text(`Woreda: ${officerInfo.woreda}`, 14, 28);
+        
+        let currentY = 36;
+        if (officerInfo.hospitalName) {
+            doc.text(`Hospital: ${officerInfo.hospitalName}`, 14, 34);
+            doc.text(`Date Range: ${reportDates.start} to ${reportDates.end}`, 14, 40);
+            currentY = 46;
+        } else {
+            doc.text(`Date Range: ${reportDates.start} to ${reportDates.end}`, 14, 34);
+        }
+
+        // Add a helper for English titles
+        const serviceNames_EN = {
+            'ልደት': 'Birth Registration',
+            'ሞት': 'Death Registration',
+            'ፍቺ': 'Divorce Registration'
+        };
+        
+        let hasData = false;
+        services.forEach(s => {
+            const tableData = [];
+            for (const date in aggregated[s]) {
+                tableData.push([
+                    date,
+                    aggregated[s][date].male,
+                    aggregated[s][date].female,
+                    aggregated[s][date].total
+                ]);
+            }
+            // Sort by Date
+            tableData.sort((a,b) => a[0].localeCompare(b[0]));
+            
+            if (tableData.length > 0) {
+                hasData = true;
+                doc.setFontSize(14);
+                // jsPDF default font doesn't support Amharic well, so we use English fallback
+                doc.text(`Service: ${serviceNames_EN[s] || s}`, 14, currentY);
+                currentY += 5;
+                
+                doc.autoTable({
+                    startY: currentY,
+                    head: [['Date', 'Male', 'Female', 'Total']],
+                    body: tableData,
+                    theme: 'grid',
+                    headStyles: { fillColor: [41, 128, 185] },
+                    styles: { font: 'helvetica' }
+                });
+                currentY = doc.lastAutoTable.finalY + 15;
+                
+                if (currentY > 250) {
+                    doc.addPage();
+                    currentY = 20;
+                }
+            }
+        });
+
+        if (!hasData) {
+            doc.text('No actual breakdown data matched criteria.', 14, currentY);
+        }
+        
+        doc.save(`DailyReport_${officerInfo.woreda}_${reportDates.start}_${reportDates.end}.pdf`);
+        setMessage('በተሳካ ሁኔታ ሪፖርት ተፈጥሯል (Report generated successfully)!');
+
+    } catch (error) {
+        console.error('Error generating report:', error);
+        setMessage('ስህተት ተፈጥሯል (Error occurred while generating report).');
+    } finally {
+        setIsGenerating(false);
     }
   };
 
@@ -251,6 +378,54 @@ const RemoteEntry = () => {
                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Divorce Registration</p>
                     </div>
                 </button>
+            </div>
+
+            {/* Daily Report Generation */}
+            <div className="mt-10 bg-white p-5 md:p-6 rounded-3xl border border-gray-100 shadow-sm">
+                <div className="flex flex-col mb-4">
+                    <h3 className="font-black text-gray-900 text-lg">Daily PDF Report</h3>
+                    <p className="text-[10px] md:text-xs text-gray-500 font-bold uppercase tracking-widest">Select date range to generate aggregate report</p>
+                </div>
+                
+                {message && !selectedType && (
+                    <div className={`p-3 rounded-xl mb-4 text-xs font-bold flex items-center gap-2 ${
+                        message.includes('Error') || message.includes('No records') || message.includes('እባክዎ') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'
+                    }`}>
+                        {message}
+                    </div>
+                )}
+                
+                <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1">
+                        <label className="text-[10px] font-black tracking-widest text-gray-400 uppercase ml-1 mb-1 block">Start Date</label>
+                        <input 
+                            type="date" 
+                            className="w-full bg-gray-50 border border-gray-200 p-3 rounded-2xl focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-gray-700"
+                            value={reportDates.start}
+                            onChange={(e) => setReportDates({...reportDates, start: e.target.value})}
+                        />
+                    </div>
+                    <div className="flex-1">
+                        <label className="text-[10px] font-black tracking-widest text-gray-400 uppercase ml-1 mb-1 block">End Date</label>
+                        <input 
+                            type="date" 
+                            className="w-full bg-gray-50 border border-gray-200 p-3 rounded-2xl focus:ring-4 focus:ring-blue-100 outline-none transition-all font-bold text-gray-700"
+                            value={reportDates.end}
+                            onChange={(e) => setReportDates({...reportDates, end: e.target.value})}
+                        />
+                    </div>
+                    <div className="flex-1 flex items-end">
+                        <button 
+                            onClick={generatePDFReport}
+                            disabled={isGenerating}
+                            className={`w-full text-white font-black p-3 rounded-2xl md:h-[50px] shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 ${
+                                isGenerating ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-900 shadow-gray-200'
+                            }`}
+                        >
+                            {isGenerating ? 'Generating...' : 'Download PDF 📄'}
+                        </button>
+                    </div>
+                </div>
             </div>
 
             {/* Recent Activity - Mobile Card View */}
