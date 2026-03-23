@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import './RemoteEntry.css';
 
 const RemoteEntry = () => {
@@ -224,7 +224,7 @@ const RemoteEntry = () => {
                 doc.text(`Service: ${serviceNames_EN[s] || s}`, 14, currentY);
                 currentY += 5;
                 
-                doc.autoTable({
+                autoTable(doc, {
                     startY: currentY,
                     head: [['Date', 'Male', 'Female', 'Total']],
                     body: tableData,
