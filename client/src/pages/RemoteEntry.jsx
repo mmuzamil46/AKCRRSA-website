@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { EthDateTime } from 'ethiopian-calendar-date-converter';
 import './RemoteEntry.css';
 
 const RemoteEntry = () => {
@@ -169,15 +170,27 @@ const RemoteEntry = () => {
         data.forEach(item => {
             const sName = item.serviceName;
             if (!aggregated[sName]) return;
-            const dateStr = new Date(item.date).toISOString().split('T')[0];
             
-            if (!aggregated[sName][dateStr]) {
-                aggregated[sName][dateStr] = { male: 0, female: 0, total: 0 };
+            let ethDateGroupKey;
+            try {
+                const dateObj = new Date(item.date);
+                const ethDate = EthDateTime.fromEuropeanDate(dateObj);
+                const pad = (n) => String(n).padStart(2, '0');
+                const sortStr = `${ethDate.year}-${pad(ethDate.month)}-${pad(ethDate.date)}`;
+                const displayStr = ethDate.toDateString(); // e.g. "Meskerem 11, 2017"
+                ethDateGroupKey = `${sortStr}|${displayStr}`;
+            } catch (err) {
+                const iso = new Date(item.date).toISOString().split('T')[0];
+                ethDateGroupKey = `${iso}|${iso}`;
             }
             
-            if (item.gender === 'ወንድ') aggregated[sName][dateStr].male += 1;
-            else if (item.gender === 'ሴት') aggregated[sName][dateStr].female += 1;
-            aggregated[sName][dateStr].total += 1;
+            if (!aggregated[sName][ethDateGroupKey]) {
+                aggregated[sName][ethDateGroupKey] = { male: 0, female: 0, total: 0 };
+            }
+            
+            if (item.gender === 'ወንድ') aggregated[sName][ethDateGroupKey].male += 1;
+            else if (item.gender === 'ሴት') aggregated[sName][ethDateGroupKey].female += 1;
+            aggregated[sName][ethDateGroupKey].total += 1;
         });
 
         const doc = new jsPDF();
@@ -206,18 +219,23 @@ const RemoteEntry = () => {
         let hasData = false;
         services.forEach(s => {
             const tableData = [];
-            for (const date in aggregated[s]) {
+            for (const key in aggregated[s]) {
+                const [sortStr, displayStr] = key.split('|');
                 tableData.push([
-                    date,
-                    aggregated[s][date].male,
-                    aggregated[s][date].female,
-                    aggregated[s][date].total
+                    sortStr,
+                    displayStr,
+                    aggregated[s][key].male,
+                    aggregated[s][key].female,
+                    aggregated[s][key].total
                 ]);
             }
-            // Sort by Date
+            // Sort by Date (Ethio sort string)
             tableData.sort((a,b) => a[0].localeCompare(b[0]));
             
-            if (tableData.length > 0) {
+            // Map to final display format
+            const printData = tableData.map(row => [row[1], row[2], row[3], row[4]]);
+            
+            if (printData.length > 0) {
                 hasData = true;
                 doc.setFontSize(14);
                 // jsPDF default font doesn't support Amharic well, so we use English fallback
@@ -226,8 +244,8 @@ const RemoteEntry = () => {
                 
                 autoTable(doc, {
                     startY: currentY,
-                    head: [['Date', 'Male', 'Female', 'Total']],
-                    body: tableData,
+                    head: [['Amharic Date', 'Male', 'Female', 'Total']],
+                    body: printData,
                     theme: 'grid',
                     headStyles: { fillColor: [41, 128, 185] },
                     styles: { font: 'helvetica' }
