@@ -24,10 +24,11 @@ connectDB();
 const app = express();
 
 app.use(cors({
-    origin: true, // Reflect the request origin to allow credentials
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    credentials: true // Enable if you use cookies/sessions
+    origin: ['https://crrsa-addisketema.vercel.app', 'http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    credentials: true, // Enable if you use cookies/sessions
+    optionsSuccessStatus: 200
 }));
 app.use(express.json({ limit: '50mb' })); // Increase payload size for Base64 images
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
