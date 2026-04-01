@@ -24,7 +24,7 @@ connectDB();
 const app = express();
 
 app.use(cors({
-    origin: '*', // Allow all origins (simpler for this case)
+    origin: true, // Reflect the request origin to allow credentials
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
     credentials: true // Enable if you use cookies/sessions
