@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
 const OfficerLogin = () => {
@@ -92,8 +92,14 @@ const OfficerLogin = () => {
           </button>
         </form>
 
-        <div className="mt-8 text-center">
-            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">Addis Ketema Subcity CRRSA</p>
+        <div className="mt-8 text-center space-y-2">
+            <p className="text-sm text-gray-500 font-semibold">
+              Don't have an account?{' '}
+              <Link to="/officer-register" className="text-blue-600 hover:text-blue-700 hover:underline decoration-2 underline-offset-4 transition-all">
+                Register here
+              </Link>
+            </p>
+            <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-4">Addis Ketema Subcity CRRSA</p>
         </div>
       </div>
     </div>

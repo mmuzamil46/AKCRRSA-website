@@ -20,6 +20,7 @@ import ChatWidget from './components/ChatWidget';
 
 import RemoteEntry from './pages/RemoteEntry';
 import OfficerLogin from './pages/OfficerLogin';
+import OfficerRegister from './pages/OfficerRegister';
 import FlipbookDemo from './pages/FlipbookDemo';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/officer-login" element={<OfficerLogin />} />
+          <Route path="/officer-register" element={<OfficerRegister />} />
           <Route path="/remote-entry" element={<RemoteEntry />} />
           <Route path="/award" element={<FlipbookDemo />} />
 
